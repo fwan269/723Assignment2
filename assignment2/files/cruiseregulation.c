@@ -1,5 +1,36 @@
 #include <stdbool.h>
 
+typedef enum {
+    CRUISE_OFF,
+    CRUISE_ON,
+    CRUISE_STDBY,
+    CRUISE_DISABLE
+} CruiseState;
+
+typedef struct {
+    bool On;
+    bool Off;
+    bool Resume;
+    bool Set;
+    bool QuickDecel;
+    bool QuickAccel;
+    float Accel;   // Accelerator pedal sensor
+    float Brake;   // Brake pedal sensor
+    float Speed;   // Vehicle speed
+} CruiseInput;
+
+typedef struct {
+    float CruiseSpeed;
+    float ThrottleCmd;
+    CruiseState State;
+} CruiseOutput;
+
+#define SPEED_MIN 30.0
+#define SPEED_MAX 150.0
+#define SPEED_INC 2.5
+#define PEDAL_MIN 3.0
+
+
 /*
 DESCRIPTION: Saturate the throttle command to limit the acceleration.
 PARAMETERS: throttleIn - throttle input
