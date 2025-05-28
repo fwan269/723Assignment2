@@ -1,4 +1,9 @@
-#include <stdbool.h>
+//#include <stdbool.h>
+
+#define SPEED_MIN 30.0
+#define SPEED_MAX 150.0
+#define SPEED_INC 2.5
+#define PEDAL_MIN 3.0
 
 typedef enum {
     CRUISE_OFF,
@@ -25,11 +30,14 @@ typedef struct {
     CruiseState State;
 } CruiseOutput;
 
-#define SPEED_MIN 30.0
-#define SPEED_MAX 150.0
-#define SPEED_INC 2.5
-#define PEDAL_MIN 3.0
 
+bool isBrakePressed(float brake) {
+    return brake > PEDAL_MIN;
+}
+
+bool isAccelPressed(float accel) {
+    return accel > PEDAL_MIN;
+}
 
 /*
 DESCRIPTION: Saturate the throttle command to limit the acceleration.
@@ -79,4 +87,30 @@ float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed)
 	iterm = iterm + error;
 	float integralAction = KI * iterm;
 	return saturateThrottle(proportionalAction + integralAction, &saturate);
+}
+
+void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
+	float cruiseInit = 0;
+
+	switch(output->State){
+		case CRUISE_OFF:
+		output->ThrottleCmd=0;
+		if(input.On){
+			output->State = CRUISE_ON;
+			*isGoingOn = true;
+			output->CruiseSpeed = input.Speed;
+			cruiseInit = output->CruiseSpeed;
+		}
+		break;
+
+		case CRUISE_ON:
+		if(input.Off){
+			output->State = CRUISE_OFF;
+		} else if (isBrakePressed(input.Brake)){
+			output->State = CRUISE_STDBY;
+		} else if (isAccelPressed(input.Accel)){
+			output->State = CRUISE_DISABLE;
+		}
+		break;
+	}
 }
