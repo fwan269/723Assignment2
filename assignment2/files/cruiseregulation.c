@@ -90,7 +90,7 @@ float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed)
 }
 
 void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
-	float cruiseInit = 0;
+	float cruiseLast = 0;
 
 	switch(output->State){
 		case CRUISE_OFF:
@@ -99,7 +99,7 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 			output->State = CRUISE_ON;
 			*isGoingOn = true;
 			output->CruiseSpeed = input.Speed;
-			cruiseInit = output->CruiseSpeed;
+			cruiseLast = output->CruiseSpeed;
 		}
 		break;
 
@@ -110,6 +110,23 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 			output->State = CRUISE_STDBY;
 		} else if (isAccelPressed(input.Accel)){
 			output->State = CRUISE_DISABLE;
+		} else {
+			if(input.Set){
+				output->CruiseSpeed=input.Speed;
+			} else if(input.QuickAccel){
+				output->CruiseSpeed += SPEED_INC;
+				if(output->CruiseSpeed>SPEED_MAX){
+					output->State = CRUISE_DISABLE;
+				}
+				cruiseLast = output->CruiseSpeed;
+			} else if(input.QuickDecel){
+				output->CruiseSpeed -= SPEED_INC;
+				if(output->CruiseSpeed<SPEED_MIN){
+					output->State = CRUISE_DISABLE;
+				}
+				cruiseLast = output->CruiseSpeed;
+			}
+			
 		}
 		break;
 	}
