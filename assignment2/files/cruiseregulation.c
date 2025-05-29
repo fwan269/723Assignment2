@@ -126,7 +126,8 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 				}
 				cruiseLast = output->CruiseSpeed;
 			}
-			
+			output->ThrottleCmd = regulateThrottle(*isGoingOn,output->CruiseSpeed,input.Speed);
+			*isGoingOn=false;
 		}
 		break;
 	}
