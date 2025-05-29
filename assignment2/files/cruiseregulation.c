@@ -1,4 +1,4 @@
-//#include <stdbool.h>
+#include <stdbool.h>
 
 #define SPEED_MIN 30.0
 #define SPEED_MAX 150.0
@@ -94,12 +94,13 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 
 	switch(output->State){
 		case CRUISE_OFF:
-		output->ThrottleCmd=0;
 		if(input.On){
 			output->State = CRUISE_ON;
 			*isGoingOn = true;
 			output->CruiseSpeed = input.Speed;
 			cruiseLast = output->CruiseSpeed;
+		} else {
+			//manual operation
 		}
 		break;
 
@@ -112,7 +113,13 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 			output->State = CRUISE_DISABLE;
 		} else {
 			if(input.Set){
-				output->CruiseSpeed=input.Speed;
+				if(input.Set>SPEED_MAX){
+					output->CruiseSpeed=SPEED_MAX;
+				} else if(input.Set<SPEED_MIN){
+					output->CruiseSpeed=SPEED_MIN;
+				} else {
+					output->CruiseSpeed=input.Speed;
+				}
 			} else if(input.QuickAccel){
 				output->CruiseSpeed += SPEED_INC;
 				if(output->CruiseSpeed>SPEED_MAX){
@@ -132,25 +139,35 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 		break;
 
 		case CRUISE_DISABLE:
-		if(!(isAccelPressed(input.Accel)) || (SPEED_MIN<input.Speed<SPEED_MAX)){
-			output->State = CRUISE_ON;
-			output->CruiseSpeed = input.Speed;
-		} else if(input.Off){
+		if(input.Off){
 			output->State = CRUISE_OFF;
+		} else if(!(isAccelPressed(input.Accel)) || (SPEED_MIN<input.Speed<SPEED_MAX)){
+			output->State = CRUISE_ON;
+			output->CruiseSpeed = cruiseLast;
 		}
 		break;
 
 		case CRUISE_STDBY:
-		if(input.Resume){
-			if(input.Off){
-				output->State = CRUISE_OFF;
-			}else if(isAccelPressed(input.Accel) || !(SPEED_MIN<input.Speed<SPEED_MAX)){
+		if(input.Off){
+			output->State = CRUISE_OFF;
+		}else if(input.Resume){
+			if(isAccelPressed(input.Accel) || !(SPEED_MIN<input.Speed<SPEED_MAX)){
 				output->State = CRUISE_DISABLE;
 			}else{
 				output->State = CRUISE_ON;
-				output->CruiseSpeed = input.Speed;
+				output->CruiseSpeed = cruiseLast;
 			}
 		}
 		break;
+	}
+}
+
+int main(){
+	CruiseInput input = {false, true, false, false, false, false, 0, 0, 0};
+	CruiseOutput output = {0, 0, CRUISE_OFF};
+	bool isGoingOn = false;
+
+	while (1){
+		CruiseControl(input, &output, &isGoingOn);
 	}
 }
