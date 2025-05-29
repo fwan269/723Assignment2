@@ -130,5 +130,27 @@ void CruiseControl(CruiseInput input, CruiseOutput* output, bool* isGoingOn) {
 			*isGoingOn=false;
 		}
 		break;
+
+		case CRUISE_DISABLE:
+		if(!(isAccelPressed(input.Accel)) || (SPEED_MIN<input.Speed<SPEED_MAX)){
+			output->State = CRUISE_ON;
+			output->CruiseSpeed = input.Speed;
+		} else if(input.Off){
+			output->State = CRUISE_OFF;
+		}
+		break;
+
+		case CRUISE_STDBY:
+		if(input.Resume){
+			if(input.Off){
+				output->State = CRUISE_OFF;
+			}else if(isAccelPressed(input.Accel) || !(SPEED_MIN<input.Speed<SPEED_MAX)){
+				output->State = CRUISE_DISABLE;
+			}else{
+				output->State = CRUISE_ON;
+				output->CruiseSpeed = input.Speed;
+			}
+		}
+		break;
 	}
 }
