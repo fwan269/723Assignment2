@@ -1,25 +1,120 @@
 module cruiseControl:
 
-%interface declarations
+%======================%
+% Interface Declarations
+%======================%
 
-%inputs:
-input on;			%enable the cruise control
-input off;			%disable the cruise control
-input resume;	 		%resume the cruise control after braking.
-input set;			%set the current speed as the new cruise speed.
-input quickDecel;		%decrease the cruise speed.
-input quickAccel; 		%increase the cruise speed.
-input accel := 0: float	%accelerator pedal sensor.
-input brake := 0: float	%brake pedal sensor.
-input speed := 0: float	%car speed sensor.
+% Inputs
+input on;                        % Enable cruise control
+input off;                       % Disable cruise control
+input resume;                    % Resume cruise control
+input set;                       % Set current speed as cruise speed
+input quickDecel;                % Decrease cruise speed
+input quickAccel;                % Increase cruise speed
+input accel := 0.0: float;       % Accelerator pedal sensor
+input brake := 0.0: float;       % Brake pedal sensor
+input speed := 0.0: float;       % Vehicle speed sensor
 
-%outputs:
-output cruiseSpeed := 0: float		%cruise speed value.
-output throttleCmd := 0: float 		%throttle command.
-output cruiseState := off: enumeration	%state of the cruise control. It can be either OFF, ON,
-STDBY, or DISABLE.
+% Outputs
+output cruiseSpeed := 0.0: float;           % Cruise speed value
+output throttleCmd := 0.0: float;           % Throttle command
+output cruiseState := OFF: CruiseState;     % Cruise state enum: OFF, ON, STDBY, DISABLE
 
-[
-	
-]
+%======================%
+% Internal Declarations
+%======================%
+
+external function regulateThrottleC(goOn: boolean, cruiseSpd: float, vehicleSpd: float): float;
+
+constant SPEED_MIN := 30.0;
+constant SPEED_MAX := 150.0;
+constant SPEED_INC := 2.5;
+constant PEDAL_MIN := 3.0;
+
+var currentState : CruiseState := OFF;
+var lastCruiseSpeed : float := 0.0;
+var isGoingOn : boolean := false;
+
+function isPressed(p: float): boolean =
+  p > PEDAL_MIN
+end function;
+
+%======================%
+% Main Control Loop
+%======================%
+
+loop
+
+  present currentState
+  case OFF do
+    if present on then
+      cruiseSpeed := ?speed;
+      lastCruiseSpeed := cruiseSpeed;
+      currentState := ON;
+      isGoingOn := true;
+    end
+
+  case ON do
+    if present off then
+      currentState := OFF;
+
+    else if isPressed(?brake) then
+      currentState := STDBY;
+
+    else if isPressed(?accel) then
+      currentState := DISABLE;
+
+    else
+      if present set then
+        cruiseSpeed := min(max(?speed, SPEED_MIN), SPEED_MAX);
+
+      else if present quickAccel then
+        cruiseSpeed := cruiseSpeed + SPEED_INC;
+        if cruiseSpeed > SPEED_MAX then
+          currentState := DISABLE;
+        end
+
+      else if present quickDecel then
+        cruiseSpeed := cruiseSpeed - SPEED_INC;
+        if cruiseSpeed < SPEED_MIN then
+          currentState := DISABLE;
+        end
+      end
+
+      % External C function will regulate throttleCmd
+      emit throttleCmd(call regulateThrottleC(isGoingOn, cruiseSpeed, ?speed));
+      
+      isGoingOn := false;
+    end
+
+  case STDBY do
+    if present off then
+      currentState := OFF;
+
+    else if present resume then
+      if isPressed(?accel) or not (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
+        currentState := DISABLE;
+      else
+        currentState := ON;
+        cruiseSpeed := lastCruiseSpeed;
+      end
+    end
+
+  case DISABLE do
+    if present off then
+      currentState := OFF;
+
+    else if not isPressed(?accel) and (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
+      currentState := ON;
+      cruiseSpeed := lastCruiseSpeed;
+    end
+  end present;
+
+  emit cruiseState(currentState);
+  emit cruiseSpeed(cruiseSpeed);
+
+  pause;
+
+end loop
+
 end module
