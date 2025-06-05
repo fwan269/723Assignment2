@@ -1,50 +1,23 @@
-module cruiseControl:
 
-%======================%
-% Interface Declarations
-%======================%
+% Cruise Control design in Esterel
 
-% Inputs
-input on;                        % Enable cruise control
-input off;                       % Disable cruise control
-input resume;                    % Resume cruise control
-input set;                       % Set current speed as cruise speed
-input quickDecel;                % Decrease cruise speed
-input quickAccel;                % Increase cruise speed
-input accel := 0.0: float;       % Accelerator pedal sensor
-input brake := 0.0: float;       % Brake pedal sensor
-input speed := 0.0: float;       % Vehicle speed sensor
+% Cruise control specification using PI control
+% Cruise control has two concurrent modules - a UnitControl module that moves the car
+% and a RequestResolver module that takes in the user requests and passes a single request to the UnitControl module
 
-% Outputs
-output cruiseSpeed := 0.0: float;           % Cruise speed value
-output throttleCmd := 0.0: float;           % Throttle command
-output cruiseState := OFF: CruiseState;     % Cruise state enum: OFF, ON, STDBY, DISABLE
+% This module controls the operation of the cruise control
+% It essentially encodes an FSM
+% It also handshakes with Request resolver to read a request
 
-%======================%
-% Internal Declarations
-%======================%
+module UnitControl:
 
-external function regulateThrottleC(goOn: boolean, cruiseSpd: float, vehicleSpd: float): float;
 
-constant SPEED_MIN := 30.0;
-constant SPEED_MAX := 150.0;
-constant SPEED_INC := 2.5;
-constant PEDAL_MIN := 3.0;
+% Interface declarations
 
-var currentState : CruiseState := OFF;
-var lastCruiseSpeed : float := 0.0;
-var isGoingOn : boolean := false;
-
-function isPressed(p: float): boolean =
-  p > PEDAL_MIN
-end function;
-
-%======================%
-% Main Control Loop
-%======================%
-
+input CruiseInput: CruiseInput;
+output CruiseOutput: CruiseOutput; 
 loop
-
+% initak=l cruise state is off
   present currentState
   case OFF do
     if present on then
@@ -83,7 +56,6 @@ loop
 
       % External C function will regulate throttleCmd
       emit throttleCmd(call regulateThrottleC(isGoingOn, cruiseSpeed, ?speed));
-      
       isGoingOn := false;
     end
 
@@ -116,5 +88,32 @@ loop
   pause;
 
 end loop
+end module
+
+% Top level module that runs the two modules in parallel
+module CruiseControl:
+type CruiseState;
+type CruiseInput;
+type CruiseOutput;
+
+% interface
+
+input CruiseInput : CruiseInput;
+output CruiseOutput : CruiseOutput;
+
+output requestOut : integer;
+
+signal request: integer in
+loop
+    present request then
+        emit requestOut(?request);
+    end present;
+    pause
+end loop
+||
+run UnitControl[ signal CruiseInput/CruiseInput;
+                 signal CruiseOutput/CruiseOutput]
+end signal
 
 end module
+
