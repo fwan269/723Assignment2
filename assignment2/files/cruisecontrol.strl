@@ -13,23 +13,33 @@ module UnitControl:
 type CruiseState;
 % Interface declarations
 
-var currentState:= OFF : CruiseState in;
+input On;
+input Off;
+input Resume;
+input Set;
+input QuickDecel;
+input QuickAccel;
+input Accel: float;   % Accelerator pedal sensor
+input Brake: float;   % Brake pedal sensor
+input Speed: float;   % Vehicle speed
 
-trap CRUISE_DONE in
+output CruiseSpeed: float;
+output ThrottleCmd: float;
+output CruiseState: CruiseState;
+
+var currentState: CruiseState in
 loop
   pause;
   trap STEP_TRANSITION in
     if currentState = OFF then
-      if present on then
-        cruiseSpd := ?speed;
+      if present On then
+        CruiseSpeed := ?speed;
         lastCruiseSpd := cruiseSpd;
         currentState := ON;
         isGoingOn := true;
         exit STEP_TRANSITION;
       end
-    end
-
-    if currentState = ON then
+    elsif currentState = ON then
       if present off then
         currentState := OFF;
         exit STEP_TRANSITION;
@@ -100,7 +110,7 @@ loop
   emit cruiseSpeed(cruiseSpd);
 
 end loop
-end trap
+end var
 end module
 
 % Top level module that runs the two modules in parallel
@@ -123,22 +133,17 @@ output CruiseSpeed: float;
 output ThrottleCmd: float;
 output CruiseState: CruiseState;
 
-output requestOut : integer;
-
-signal request: integer in
-loop
-    present request then
-        emit requestOut(?request);
-    end present;
-    pause
-end loop
-||
-run UnitControl[ signal FloorSensor1/FloorSensor;
-                 signal MotorDirectionUp1/MotorDirectionUp;
-                 signal MotorDirectionDown1/MotorDirectionDown;
-                 signal MotorDirectionIdle1/MotorDirectionIdle;
-                 signal StoppedAtFloor1/StoppedAtFloor;
-                 signal request/request]
-end signal
+run UnitControl[ signal On/On;
+                 signal Off/Off;
+                 signal Resume/Resume;
+                  signal Set/Set;
+                  signal QuickDecel/QuickDecel;
+                  signal QuickAccel/QuickAccel;
+                  signal Accel/Accel;
+                  signal Brake/Brake;
+                  signal Speed/Speed;
+                  signal CruiseSpeed/CruiseSpeed;
+                  signal ThrottleCmd/ThrottleCmd;
+                  signal CruiseState/CruiseState]
 
 end module
