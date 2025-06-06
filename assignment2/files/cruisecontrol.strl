@@ -40,52 +40,48 @@ function isPressed(float): boolean;
 
 
 var
-  currentState: CruiseState;
-  cruiseSpd: float;
-  lastCruiseSpd: float;
-  isGoingOn: boolean;
+  currentState: CruiseState,
+  cruiseSpd: float,
+  lastCruiseSpd: float,
+  isGoingOn: boolean
 in
-  currentState:= OFF;
-  cruiseSpd := 0.0;
-  lastCruiseSpd := 0.0;
-  isGoingOn := false;
 loop
   pause;
   trap STEP_TRANSITION in
-
-    if currentState = OFF then
-      present On do
-        CruiseSpeed := ?speed;
-        lastCruiseSpd := cruiseSpd;
-        currentState := ON;
-        isGoingOn := true;
-        exit STEP_TRANSITION;
+   if currentState = OFF then
+    present On then
+     present Speed then
+      cruiseSpd := ?Speed;
+      emit CruiseSpeed(cruiseSpd);
+      lastCruiseSpd := cruiseSpd;
+      currentState := ON;
+      isGoingOn := true;
+      exit STEP_TRANSITION;
       end
     end
-    
-    if currentState = ON then
-      present Off then
-        currentState := OFF;
-        exit STEP_TRANSITION;
+  end
+
+  if currentState = ON then
+    present Off then
+      currentState := OFF,
+      emit CruiseState(currentState),
+      exit STEP_TRANSITION,
     end
 
-    present Brake do
-
+    present Brake then
       if isPressed(?brake) then
         currentState := STDBY;
         exit STEP_TRANSITION;
-        end
       end
-    
-    present Accel do
+
+    present Accel then
       if isPressed(?accel) then
         currentState := DISABLE;
         exit STEP_TRANSITION;
       end
     end
 
-    
-    present set do
+    present set then
       cruiseSpd := min(max(?speed, SPEED_MIN), SPEED_MAX);
     end
 
@@ -105,13 +101,17 @@ loop
         end
     end
 
-        emit throttleCmd(call regulateThrottleC(isGoingOn, cruiseSpd, ?speed));
-        isGoingOn := false;
-        exit STEP_TRANSITION;
-      end
-    end
+    present Speed then
+        emit ThrottleCmd(call regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+    end;
 
-    if currentState = STDBY then
+     
+      isGoingOn := false;
+      exit STEP_TRANSITION;
+      emit CruiseState(currentState);
+  end
+
+  if currentState = STDBY then
       present off do
         currentState := OFF;
         exit STEP_TRANSITION;
