@@ -1,9 +1,6 @@
 #include <stdbool.h>
 
-#define SPEED_MIN 30.0
-#define SPEED_MAX 150.0
-#define SPEED_INC 2.5
-#define PEDAL_MIN 3.0
+
 
 typedef enum {
     OFF,
@@ -34,11 +31,11 @@ typedef struct {
 
 
 bool isBrakePressed(float brake) {
-    return brake > PEDAL_MIN;
+    return brake > 3.0;
 }
 
 bool isAccelPressed(float accel) {
-    return accel > PEDAL_MIN;
+    return accel > 3.0;
 }
 
 /*
@@ -117,22 +114,22 @@ void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bo
 			cruiseState = DISABLE;
 		} else {
 			if(Set){
-				if(Set>SPEED_MAX){
-					CruiseSpeed=SPEED_MAX;
-				} else if(Set<SPEED_MIN){
-					CruiseSpeed=SPEED_MIN;
+				if(Set>150){
+					CruiseSpeed=150;
+				} else if(Set<30){
+					CruiseSpeed=30;
 				} else {
 					CruiseSpeed=Speed;
 				}
 			} else if(QuickAccel){
-				CruiseSpeed += SPEED_INC;
-				if(CruiseSpeed>SPEED_MAX){
+				CruiseSpeed += 2.5;
+				if(CruiseSpeed>150){
 					cruiseState = DISABLE;
 				}
 				cruiseLast = CruiseSpeed;
 			} else if(QuickDecel){
-				CruiseSpeed -= SPEED_INC;
-				if(CruiseSpeed<SPEED_MIN){
+				CruiseSpeed -= 2.5;
+				if(CruiseSpeed<30){
 					cruiseState = DISABLE;
 				}
 				cruiseLast = CruiseSpeed;
@@ -145,7 +142,7 @@ void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bo
 		case DISABLE:
 		if(Off){
 			cruiseState = OFF;
-		} else if(!(isAccelPressed(Accel)) || (SPEED_MIN<Speed<SPEED_MAX)){
+		} else if(!(isAccelPressed(Accel)) || (30<Speed<150)){
 			cruiseState = ON;
 			CruiseSpeed = cruiseLast;
 		}
@@ -155,7 +152,7 @@ void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bo
 		if(Off){
 			cruiseState = OFF;
 		}else if(Resume){
-			if(isAccelPressed(Accel) || !(SPEED_MIN<Speed<SPEED_MAX)){
+			if(isAccelPressed(Accel) || !(30<Speed<150)){
 				cruiseState = DISABLE;
 			}else{
 				cruiseState = ON;

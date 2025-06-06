@@ -31,59 +31,79 @@ output CruiseSpeed: float;
 output ThrottleCmd: float;
 output CruiseState: CruiseState;
 
+constant SPEED_MIN: float;
+constant SPEED_MAX: float;
+constant SPEED_INC: float;
 
-type CruiseControlState;
-constant CruiseSpeed: CruiseControlState;
-constant ThrottleCmd: CruiseControlState;
-constant cruiseState: CruiseControlState;
-constant isGoingOn: CruiseControlState;
-constant lastCruiseSpeed: CruiseControlState;
-
+function regulateThrottle(boolean,float,float):float;
+function isPressed(float): boolean;
 
 
-var currentState: CruiseState in
+var
+  currentState: CruiseState;
+  cruiseSpd: float;
+  lastCruiseSpd: float;
+  isGoingOn: boolean;
+in
+  currentState:= OFF;
+  cruiseSpd := 0.0;
+  lastCruiseSpd := 0.0;
+  isGoingOn := false;
 loop
   pause;
   trap STEP_TRANSITION in
+
     if currentState = OFF then
-      present On then
+      present On do
         CruiseSpeed := ?speed;
         lastCruiseSpd := cruiseSpd;
         currentState := ON;
         isGoingOn := true;
         exit STEP_TRANSITION;
       end
-    elsif currentState = ON then
-      present off then
+    end
+    
+    if currentState = ON then
+      present Off then
         currentState := OFF;
         exit STEP_TRANSITION;
+    end
 
-      elsif isPressed(?brake) then
+    present Brake do
+
+      if isPressed(?brake) then
         currentState := STDBY;
         exit STEP_TRANSITION;
-
-      elsif isPressed(?accel) then
+        end
+      end
+    
+    present Accel do
+      if isPressed(?accel) then
         currentState := DISABLE;
         exit STEP_TRANSITION;
+      end
+    end
 
-      else
-        present set then
-          cruiseSpd := min(max(?speed, SPEED_MIN), SPEED_MAX);
+    
+    present set do
+      cruiseSpd := min(max(?speed, SPEED_MIN), SPEED_MAX);
+    end
 
-        elsif present quickAccel then
-          cruiseSpd := cruiseSpd + SPEED_INC;
-          if cruiseSpd > SPEED_MAX then
-            currentState := DISABLE;
-            exit STEP_TRANSITION;
-          end
+    present quickAccel then
+      cruiseSpd := cruiseSpd + SPEED_INC;
+      if cruiseSpd > SPEED_MAX then
+        currentState := DISABLE;
+        exit STEP_TRANSITION;
+      end
+    end
 
-        elsif present quickDecel then
-          cruiseSpd := cruiseSpd - SPEED_INC;
-          if cruiseSpd < SPEED_MIN then
-            currentState := DISABLE;
-            exit STEP_TRANSITION;
-          end
+    present quickDecel do
+        cruiseSpd := cruiseSpd - SPEED_INC;
+        if cruiseSpd < SPEED_MIN then
+          currentState := DISABLE;
+          exit STEP_TRANSITION;
         end
+    end
 
         emit throttleCmd(call regulateThrottleC(isGoingOn, cruiseSpd, ?speed));
         isGoingOn := false;
@@ -92,11 +112,11 @@ loop
     end
 
     if currentState = STDBY then
-      if present off then
+      present off do
         currentState := OFF;
         exit STEP_TRANSITION;
 
-      elsif present resume then
+      present resume do
         if isPressed(?accel) or not (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
           currentState := DISABLE;
         else
@@ -108,11 +128,12 @@ loop
     end
 
     if currentState = DISABLE then
-      if present off then
+      present off do
         currentState := OFF;
         exit STEP_TRANSITION;
+      end
 
-      elsif not isPressed(?accel) and (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
+      if not isPressed(?accel) and (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
         currentState := ON;
         cruiseSpd := lastCruiseSpd;
         exit STEP_TRANSITION;
