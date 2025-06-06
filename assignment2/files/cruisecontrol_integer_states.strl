@@ -154,31 +154,31 @@ module CruiseControl:
 
 % interface
 
-input On;
-input Off;
-input Resume;
-input Set;
-input QuickDecel;
-input QuickAccel;
-input Accel: float;   % Accelerator pedal sensor
-input Brake: float;   % Brake pedal sensor
-input Speed: float;   % Vehicle speed
+input OnMain;
+input OffMain;
+input ResumeMain;
+input SetMain;
+input QuickDecelMain;
+input QuickAccelMain;
+input AccelMain: float;   % Accelerator pedal sensor
+input BrakeMain: float;   % Brake pedal sensor
+input SpeedMain: float;   % Vehicle speed
 
-output CruiseSpeed: float;
-output ThrottleCmd: float;
-output CruiseState: integer;
+output CruiseSpeedMain: float;
+output ThrottleCmdMain: float;
+output CruiseStateMain: integer;
 
-run UnitControl[ signal On/On;
-                 signal Off/Off;
-                 signal Resume/Resume;
-                  signal Set/Set;
-                  signal QuickDecel/QuickDecel;
-                  signal QuickAccel/QuickAccel;
-                  signal Accel/Accel;
-                  signal Brake/Brake;
-                  signal Speed/Speed;
-                  signal CruiseSpeed/CruiseSpeed;
-                  signal ThrottleCmd/ThrottleCmd;
-                  signal CruiseState/CruiseState]
+run UnitControl[ signal OnMain/On;
+                 signal OffMain/Off;
+                 signal ResumeMain/Resume;
+                  signal SetMain/Set;
+                  signal QuickDecelMain/QuickDecel;
+                  signal QuickAccelMain/QuickAccel;
+                  signal AccelMain/Accel;
+                  signal BrakeMain/Brake;
+                  signal SpeedMain/Speed;
+                  signal CruiseSpeedMain/CruiseSpeed;
+                  signal ThrottleCmdMain/ThrottleCmd;
+                  signal CruiseStateMain/CruiseState]
 
 end module
