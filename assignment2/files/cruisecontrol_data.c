@@ -11,6 +11,16 @@ typedef enum {
     STDBY,
     DISABLE
 } CruiseState;
+
+typedef struct {
+    float CruiseSpeed;
+    float ThrottleCmd;
+    CruiseState cruiseState;
+    bool isGoingOn;
+    float lastCruiseSpeed;
+} CruiseControlState;
+
+
 #include <stdbool.h>
 
 
