@@ -40,12 +40,13 @@ constant isGoingOn: CruiseControlState;
 constant lastCruiseSpeed: CruiseControlState;
 
 
+
 var currentState: CruiseState in
 loop
   pause;
   trap STEP_TRANSITION in
     if currentState = OFF then
-      if present On then
+      present On then
         CruiseSpeed := ?speed;
         lastCruiseSpd := cruiseSpd;
         currentState := ON;
@@ -53,7 +54,7 @@ loop
         exit STEP_TRANSITION;
       end
     elsif currentState = ON then
-      if present off then
+      present off then
         currentState := OFF;
         exit STEP_TRANSITION;
 
@@ -66,7 +67,7 @@ loop
         exit STEP_TRANSITION;
 
       else
-        if present set then
+        present set then
           cruiseSpd := min(max(?speed, SPEED_MIN), SPEED_MAX);
 
         elsif present quickAccel then
