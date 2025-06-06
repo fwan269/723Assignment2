@@ -1,21 +1,9 @@
-
-% Cruise Control design in Esterel
-
-% Cruise control specification using PI control
-% Cruise control has two concurrent modules - a UnitControl module that moves the car
-% and a RequestResolver module that takes in the user requests and passes a single request to the UnitControl module
-
-% This module controls the operation of the cruise control
-% It essentially encodes an FSM
-% It also handshakes with Request resolver to read a request
-
 module UnitControl:
 type CruiseState;
 constant OFF: CruiseState;
 constant ON: CruiseState;
 constant STDBY: CruiseState;
 constant DISABLE: CruiseState;
-% Interface declarations
 
 input On;
 input Off;
@@ -23,9 +11,9 @@ input Resume;
 input Set;
 input QuickDecel;
 input QuickAccel;
-input Accel: float;   % Accelerator pedal sensor
-input Brake: float;   % Brake pedal sensor
-input Speed: float;   % Vehicle speed
+input Accel: float;
+input Brake: float;
+input Speed: float;
 
 output CruiseSpeed: float;
 output ThrottleCmd: float;
@@ -35,9 +23,8 @@ constant SPEED_MIN: float;
 constant SPEED_MAX: float;
 constant SPEED_INC: float;
 
-function regulateThrottle(boolean,float,float):float;
+function regulateThrottle(boolean, float, float): float;
 function isPressed(float): boolean;
-
 
 var
   currentState: CruiseState,
@@ -48,105 +35,117 @@ in
 loop
   pause;
   trap STEP_TRANSITION in
-   if currentState = OFF then
-    present On then
-     present Speed then
-      cruiseSpd := ?Speed;
-      emit CruiseSpeed(cruiseSpd);
-      lastCruiseSpd := cruiseSpd;
-      currentState := ON;
-      isGoingOn := true;
-      exit STEP_TRANSITION;
+
+    if currentState = OFF then
+      present On then
+        present Speed then
+          cruiseSpd := ?Speed;
+          emit CruiseSpeed(cruiseSpd);
+          lastCruiseSpd := cruiseSpd;
+          currentState := ON;
+          isGoingOn := true;
+          exit STEP_TRANSITION;
+        end
       end
-    end
-  end
+    end;
 
-  if currentState = ON then
-    present Off then
-      currentState := OFF,
-      emit CruiseState(currentState),
-      exit STEP_TRANSITION,
-    end
-
-    present Brake then
-      if isPressed(?brake) then
-        currentState := STDBY;
+    if currentState = ON then
+      present Off then
+        currentState := OFF;
+        emit CruiseState(currentState);
         exit STEP_TRANSITION;
-      end
+      end;
 
-    present Accel then
-      if isPressed(?accel) then
-        currentState := DISABLE;
-        exit STEP_TRANSITION;
-      end
-    end
+      present Brake then
+        if isPressed(?Brake) then
+          currentState := STDBY;
+          emit CruiseState(currentState);
+          exit STEP_TRANSITION;
+        end
+      end;
 
-    present set then
-      cruiseSpd := min(max(?speed, SPEED_MIN), SPEED_MAX);
-    end
+      present Accel then
+        if isPressed(?Accel) then
+          currentState := DISABLE;
+          emit CruiseState(currentState);
+          exit STEP_TRANSITION;
+        end
+      end;
 
-    present quickAccel then
-      cruiseSpd := cruiseSpd + SPEED_INC;
-      if cruiseSpd > SPEED_MAX then
-        currentState := DISABLE;
-        exit STEP_TRANSITION;
-      end
-    end
+      present Set then
+        if ?Speed < SPEED_MIN then
+        cruiseSpd := SPEED_MIN;
+        else
+        if ?Speed > SPEED_MAX then
+        cruiseSpd := SPEED_MAX;
+        else
+        cruiseSpd := ?Speed;
+        end
+end
+      end;
 
-    present quickDecel do
+      present QuickAccel then
+        cruiseSpd := cruiseSpd + SPEED_INC;
+        if cruiseSpd > SPEED_MAX then
+          currentState := DISABLE;
+          exit STEP_TRANSITION;
+        end
+      end;
+
+      present QuickDecel then
         cruiseSpd := cruiseSpd - SPEED_INC;
         if cruiseSpd < SPEED_MIN then
           currentState := DISABLE;
           exit STEP_TRANSITION;
         end
-    end
+      end;
 
-    present Speed then
-        emit ThrottleCmd(call regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+      present Speed then
+        emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+      end;
+
+      isGoingOn := false;
+      emit CruiseState(currentState);
+      exit STEP_TRANSITION;
     end;
 
-     
-      isGoingOn := false;
-      exit STEP_TRANSITION;
-      emit CruiseState(currentState);
-  end
-
-  if currentState = STDBY then
-      present off do
+    if currentState = STDBY then
+      present Off then
         currentState := OFF;
         exit STEP_TRANSITION;
+      end;
 
-      present resume do
-        if isPressed(?accel) or not (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
+      present Resume then
+        if isPressed(?Accel) or not (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
           currentState := DISABLE;
         else
           currentState := ON;
           cruiseSpd := lastCruiseSpd;
-        end
+        end;
         exit STEP_TRANSITION;
       end
-    end
+    end;
 
     if currentState = DISABLE then
-      present off do
+      present Off then
         currentState := OFF;
         exit STEP_TRANSITION;
-      end
+      end;
 
-      if not isPressed(?accel) and (?speed > SPEED_MIN and ?speed < SPEED_MAX) then
+      if not isPressed(?Accel) and (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
         currentState := ON;
         cruiseSpd := lastCruiseSpd;
         exit STEP_TRANSITION;
       end
-    end
-  end trap
+    end;
 
-  emit cruiseState(currentState);
-  emit cruiseSpeed(cruiseSpd);
-
-end loop
-end var
+    emit CruiseState(currentState);
+    emit CruiseSpeed(cruiseSpd);
+  end trap;
+end loop;
+end var;
 end module
+
 
 % Top level module that runs the two modules in parallel
 module CruiseControl:
