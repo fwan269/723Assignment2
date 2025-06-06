@@ -13,7 +13,7 @@ typedef struct {
     float CruiseSpeed;
     float ThrottleCmd;
     CruiseState cruiseState;
-    bool isGoingOn;
+    int isGoingOn;
     float lastCruiseSpeed;
 } CruiseControlState;
 
@@ -68,14 +68,14 @@ PARAMETERS: isGoingOn - true if the cruise control has just gone into the ON sta
             saturate - true if saturated, false otherwise
 RETURNS: throttle output (ThrottleCmd)
 */
-float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed)
+float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 {
 	static const float KP = 8.113;
 	static const float KI = 0.5;
 	static bool saturate = true;
 	static float iterm = 0;
 	
-	if (isGoingOn) {
+	if (isGoingOn == 1) {
 		iterm = 0;	// reset the integral action
 		saturate = true;	
 	}
@@ -90,14 +90,14 @@ float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed)
 
 void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
 				   float Accel, float Brake, float Speed, float CruiseSpeed, 
-				   float ThrottleCmd, CruiseState cruiseState, bool isGoingOn) {
+				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
 	float cruiseLast = 0;
 
 	switch(cruiseState){
 		case OFF:
 		if(On){
 			cruiseState = ON;
-			isGoingOn = true;
+			isGoingOn = 1;
 			CruiseSpeed = Speed;
 			cruiseLast = CruiseSpeed;
 		} else {
@@ -135,7 +135,7 @@ void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bo
 				cruiseLast = CruiseSpeed;
 			}
 			ThrottleCmd = regulateThrottle(isGoingOn,CruiseSpeed,Speed);
-			isGoingOn=false;
+			isGoingOn=0;
 		}
 		break;
 
@@ -178,7 +178,7 @@ int main(){
 	float ThrottleCmd = 0.0;
 	CruiseState cruiseState = OFF;
 
-	bool isGoingOn = false;
+	bool isGoingOn = 0;
 
 	while (1){
 		CruiseControl(On, Off, Resume, Set, QuickDecel, QuickAccel, Accel, Brake, Speed, CruiseSpeed, ThrottleCmd, cruiseState, isGoingOn);

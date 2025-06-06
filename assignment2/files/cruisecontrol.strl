@@ -1,4 +1,5 @@
 module UnitControl:
+
 type CruiseState;
 constant OFF: CruiseState;
 constant ON: CruiseState;

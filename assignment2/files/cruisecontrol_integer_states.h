@@ -5,6 +5,6 @@
 #define SPEED_INC 2.5
 #define PEDAL_MIN 3.0
 
-float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed);
+float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed);
 bool isBrakePressed(float brake);
 bool isAccelPressed(float accel);
