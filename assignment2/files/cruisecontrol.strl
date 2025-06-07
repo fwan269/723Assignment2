@@ -28,7 +28,7 @@
   function isPressed(float): boolean;
 
   var
-    currentState := init,
+    currentState := init: CruiseState,
     cruiseSpd: float,
     lastCruiseSpd: float,
     isGoingOn: boolean
