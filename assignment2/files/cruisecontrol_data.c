@@ -30,13 +30,13 @@ typedef struct {
 // int check_BoolArray (char∗) ;
 
 
-bool isBrakePressed(float brake) {
-    return brake > 3.0;
-}
+//bool isBrakePressed(float brake) {
+   // return brake > 3.0;
+//}
 
-bool isAccelPressed(float accel) {
-    return accel > 3.0;
-}
+//bool isAccelPressed(float accel) {
+ //   return accel > 3.0;
+//}
 
 /*
 DESCRIPTION: Saturate the throttle command to limit the acceleration.
@@ -87,6 +87,96 @@ float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 	float integralAction = KI * iterm;
 	return saturateThrottle(proportionalAction + integralAction, &saturate);
 }
+
+
+void CruiseControl_off(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
+				   float Accel, float Brake, float Speed, float CruiseSpeed, 
+				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn){
+	
+	float cruiseLast = 0;
+
+	if(On){
+		cruiseState = ON;
+		isGoingOn = 1;
+		CruiseSpeed = Speed;
+		cruiseLast = CruiseSpeed;
+	} else {
+		//manual operation
+	}
+
+}
+
+void CruiseControl_on(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
+				   float Accel, float Brake, float Speed, float CruiseSpeed, 
+				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
+
+	if(Off){
+			cruiseState = OFF;
+		} else if (isBrakePressed(Brake)){
+			cruiseState = STDBY;
+		} else if (isAccelPressed(Accel)){
+			cruiseState = DISABLE;
+		} else {
+			if(Set){
+				if(Set>150){
+					CruiseSpeed=150;
+				} else if(Set<30){
+					CruiseSpeed=30;
+				} else {
+					CruiseSpeed=Speed;
+				}
+			} else if(QuickAccel){
+				CruiseSpeed += 2.5;
+				if(CruiseSpeed>150){
+					cruiseState = DISABLE;
+				}
+				cruiseLast = CruiseSpeed;
+			} else if(QuickDecel){
+				CruiseSpeed -= 2.5;
+				if(CruiseSpeed<30){
+					cruiseState = DISABLE;
+				}
+				cruiseLast = CruiseSpeed;
+			}
+			ThrottleCmd = regulateThrottle(isGoingOn,CruiseSpeed,Speed);
+			isGoingOn=0;
+		}
+
+}
+
+void CruiseControl_disable(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
+				   float Accel, float Brake, float Speed, float CruiseSpeed, 
+				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
+	
+	if(Off){
+			cruiseState = OFF;
+		} else if(!(isAccelPressed(Accel)) || (30<Speed<150)){
+			cruiseState = ON;
+			CruiseSpeed = cruiseLast;
+		}
+
+}
+
+
+void CruiseControl_STDBY(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
+				   float Accel, float Brake, float Speed, float CruiseSpeed, 
+				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
+
+	if(Off){
+			cruiseState = OFF;
+		}else if(Resume){
+			if(isAccelPressed(Accel) || !(30<Speed<150)){
+				cruiseState = DISABLE;
+			}else{
+				cruiseState = ON;
+				CruiseSpeed = cruiseLast;
+			}
+		}
+
+}
+
+
+
 
 void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
 				   float Accel, float Brake, float Speed, float CruiseSpeed, 
