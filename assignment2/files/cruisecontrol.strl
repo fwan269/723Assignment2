@@ -181,3 +181,10 @@ run UnitControl[ signal On/On;
                   signal CruiseState/CruiseState]
 
 end module
+
+module CruiseControl1:
+
+
+
+end module
+

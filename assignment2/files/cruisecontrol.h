@@ -1,4 +1,18 @@
 #include <stdbool.h>
+typedef enum {
+    OFF,
+    ON,
+    STDBY,
+    DISABLE
+} CruiseState;
+
+typedef struct {
+    float CruiseSpeed;
+    float ThrottleCmd;
+    CruiseState cruiseState;
+    int isGoingOn;
+    float lastCruiseSpeed;
+} CruiseControlState;
 
 #define SPEED_MIN 30.0
 #define SPEED_MAX 150.0
