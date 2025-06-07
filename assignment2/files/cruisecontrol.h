@@ -20,12 +20,12 @@ typedef struct {
     float lastCruiseSpeed;
 } CruiseControlState;
 
-void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
-				   float Accel, float Brake, float Speed, float CruiseSpeed, 
-				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn); 
 
-
-
+void _CruiseState(CruiseState *lhs, CruiseState rhs);
+int _eq_CruiseState(CruiseState lhs, CruiseState rhs);
+char* _CruiseState_to_text(CruiseState state);
+void _text_to_CruiseState(CruiseState *state, char *text);
+int _check_CruiseState(char *text);
 
 float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed);
 bool isBrakePressed(float brake);
