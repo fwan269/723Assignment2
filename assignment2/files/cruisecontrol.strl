@@ -1,183 +1,185 @@
-module UnitControl:
-type CruiseState;
-constant OFF: CruiseState;
-constant ON: CruiseState;
-constant STDBY: CruiseState;
-constant DISABLE: CruiseState;
+  module UnitControl:
+  type CruiseState;
+  constant OFF: CruiseState;
+  constant ON: CruiseState;
+  constant STDBY: CruiseState;
+  constant DISABLE: CruiseState;
 
-input On;
-input Off;
-input Resume;
-input Set;
-input QuickDecel;
-input QuickAccel;
-input Accel: float;
-input Brake: float;
-input Speed: float;
+  input On;
+  input Off;
+  input Resume;
+  input Set;
+  input QuickDecel;
+  input QuickAccel;
+  input Accel: float;
+  input Brake: float;
+  input Speed: float;
 
-output CruiseSpeed: float;
-output ThrottleCmd: float;
-output CruiseState: CruiseState;
+  output CruiseSpeed: float;
+  output ThrottleCmd: float;
+  output CruiseState: CruiseState;
 
-constant SPEED_MIN: float;
-constant SPEED_MAX: float;
-constant SPEED_INC: float;
+  constant SPEED_MIN: float;
+  constant SPEED_MAX: float;
+  constant SPEED_INC: float;
 
-function regulateThrottle(boolean, float, float): float;
-function isPressed(float): boolean;
+  function regulateThrottle(boolean, float, float): float;
+  function isPressed(float): boolean;
 
-var
-  currentState: CruiseState,
-  cruiseSpd: float,
-  lastCruiseSpd: float,
-  isGoingOn: boolean
-in
-loop
-  pause;
-  trap STEP_TRANSITION in
+  var
+    currentState: CruiseState,
+    cruiseSpd: float,
+    lastCruiseSpd: float,
+    isGoingOn: boolean
+  in
+  loop
+    pause;
+    trap STEP_TRANSITION in
 
-    if currentState = OFF then
-      present On then
-        present Speed then
-          cruiseSpd := ?Speed;
-          emit CruiseSpeed(cruiseSpd);
-          lastCruiseSpd := cruiseSpd;
-          currentState := ON;
-          isGoingOn := true;
-          exit STEP_TRANSITION;
+      if currentState = OFF then
+        present On then
+          present Speed then
+            cruiseSpd := ?Speed;
+            emit CruiseSpeed(cruiseSpd);
+            lastCruiseSpd := cruiseSpd;
+            currentState := ON;
+            isGoingOn := true;
+            exit STEP_TRANSITION;
+          end
         end
-      end
-    end;
+      end;
 
-    if currentState = ON then
-      present Off then
-        currentState := OFF;
+      if currentState = ON then
+        present Off then
+          currentState := OFF;
+          emit CruiseState(currentState);
+          exit STEP_TRANSITION;
+        end;
+
+        present Brake then
+          if isPressed(?Brake) then
+            currentState := STDBY;
+            emit CruiseState(currentState);
+            exit STEP_TRANSITION;
+          end
+        end;
+
+        present Accel then
+          if isPressed(?Accel) then
+            currentState := DISABLE;
+            emit CruiseState(currentState);
+            exit STEP_TRANSITION;
+          end
+        end;
+
+        present Set then
+          if ?Speed < SPEED_MIN then
+          cruiseSpd := SPEED_MIN;
+          else
+          if ?Speed > SPEED_MAX then
+          cruiseSpd := SPEED_MAX;
+          else
+          cruiseSpd := ?Speed;
+          end
+  end
+        end;
+
+        present QuickAccel then
+          cruiseSpd := cruiseSpd + SPEED_INC;
+          if cruiseSpd > SPEED_MAX then
+            currentState := DISABLE;
+            exit STEP_TRANSITION;
+          end
+        end;
+
+        present QuickDecel then
+          cruiseSpd := cruiseSpd - SPEED_INC;
+          if cruiseSpd < SPEED_MIN then
+            currentState := DISABLE;
+            exit STEP_TRANSITION;
+          end
+        end;
+
+        present Speed then
+          emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+        end;
+
+        isGoingOn := false;
         emit CruiseState(currentState);
         exit STEP_TRANSITION;
       end;
 
-      present Brake then
-        if isPressed(?Brake) then
-          currentState := STDBY;
-          emit CruiseState(currentState);
+      if currentState = STDBY then
+        present Off then
+          currentState := OFF;
+          exit STEP_TRANSITION;
+        end;
+
+        present Resume then
+          if isPressed(?Accel) or not (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
+            currentState := DISABLE;
+          else
+            currentState := ON;
+            cruiseSpd := lastCruiseSpd;
+          end;
           exit STEP_TRANSITION;
         end
       end;
 
-      present Accel then
-        if isPressed(?Accel) then
-          currentState := DISABLE;
-          emit CruiseState(currentState);
+      if currentState = DISABLE then
+        present Off then
+          currentState := OFF;
           exit STEP_TRANSITION;
-        end
-      end;
+        end;
 
-      present Set then
-        if ?Speed < SPEED_MIN then
-        cruiseSpd := SPEED_MIN;
-        else
-        if ?Speed > SPEED_MAX then
-        cruiseSpd := SPEED_MAX;
-        else
-        cruiseSpd := ?Speed;
-        end
-end
-      end;
-
-      present QuickAccel then
-        cruiseSpd := cruiseSpd + SPEED_INC;
-        if cruiseSpd > SPEED_MAX then
-          currentState := DISABLE;
-          exit STEP_TRANSITION;
-        end
-      end;
-
-      present QuickDecel then
-        cruiseSpd := cruiseSpd - SPEED_INC;
-        if cruiseSpd < SPEED_MIN then
-          currentState := DISABLE;
-          exit STEP_TRANSITION;
-        end
-      end;
-
-      present Speed then
-        emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
-      end;
-
-      isGoingOn := false;
-      emit CruiseState(currentState);
-      exit STEP_TRANSITION;
-    end;
-
-    if currentState = STDBY then
-      present Off then
-        currentState := OFF;
-        exit STEP_TRANSITION;
-      end;
-
-      present Resume then
-        if isPressed(?Accel) or not (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
-          currentState := DISABLE;
-        else
+        if not isPressed(?Accel) and (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
           currentState := ON;
           cruiseSpd := lastCruiseSpd;
-        end;
-        exit STEP_TRANSITION;
-      end
-    end;
-
-    if currentState = DISABLE then
-      present Off then
-        currentState := OFF;
-        exit STEP_TRANSITION;
+          exit STEP_TRANSITION;
+        end
       end;
 
-      if not isPressed(?Accel) and (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
-        currentState := ON;
-        cruiseSpd := lastCruiseSpd;
-        exit STEP_TRANSITION;
-      end
-    end;
-
-    emit CruiseState(currentState);
-    emit CruiseSpeed(cruiseSpd);
-  end trap;
-end loop;
-end var;
-end module
+      emit CruiseState(currentState);
+      emit CruiseSpeed(cruiseSpd);
+    end trap;
+  end loop;
+  end var;
+  end module
 
 
-% Top level module that runs the two modules in parallel
-module CruiseControl:
-type CruiseState;
+  % Top level module that runs the two modules in parallel
+  module CruiseControl:
+  type CruiseState;
 
-% interface
+  % interface
 
-input On;
-input Off;
-input Resume;
-input Set;
-input QuickDecel;
-input QuickAccel;
-input Accel: float;   % Accelerator pedal sensor
-input Brake: float;   % Brake pedal sensor
-input Speed: float;   % Vehicle speed
+  input On;
+  input Off;
+  input Resume;
+  input Set;
+  input QuickDecel;
+  input QuickAccel;
+  input Accel: float;   % Accelerator pedal sensor
+  input Brake: float;   % Brake pedal sensor
+  input Speed: float;   % Vehicle speed
 
-output CruiseSpeed: float;
-output ThrottleCmd: float;
-output CruiseState: CruiseState;
+  output CruiseSpeed: float;
+  output ThrottleCmd: float;
+  output CruiseState: CruiseState;
 
-run UnitControl[ signal On/On;
-                 signal Off/Off;
-                 signal Resume/Resume;
-                  signal Set/Set;
-                  signal QuickDecel/QuickDecel;
-                  signal QuickAccel/QuickAccel;
-                  signal Accel/Accel;
-                  signal Brake/Brake;
-                  signal Speed/Speed;
-                  signal CruiseSpeed/CruiseSpeed;
-                  signal ThrottleCmd/ThrottleCmd;
-                  signal CruiseState/CruiseState]
+  run UnitControl[ signal On/On;
+                  signal Off/Off;
+                  signal Resume/Resume;
+                    signal Set/Set;
+                    signal QuickDecel/QuickDecel;
+                    signal QuickAccel/QuickAccel;
+                    signal Accel/Accel;
+                    signal Brake/Brake;
+                    signal Speed/Speed;
+                    signal CruiseSpeed/CruiseSpeed;
+                    signal ThrottleCmd/ThrottleCmd;
+                    signal CruiseState/CruiseState]
 
-end module
+  end module
+
+

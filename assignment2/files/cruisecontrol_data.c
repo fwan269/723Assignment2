@@ -30,13 +30,13 @@ typedef struct {
 // int check_BoolArray (char∗) ;
 
 
-bool isBrakePressed(float brake) {
-    return brake > 3.0;
-}
+//bool isBrakePressed(float brake) {
+   // return brake > 3.0;
+//}
 
-bool isAccelPressed(float accel) {
-    return accel > 3.0;
-}
+//bool isAccelPressed(float accel) {
+ //   return accel > 3.0;
+//}
 
 /*
 DESCRIPTION: Saturate the throttle command to limit the acceleration.
@@ -87,6 +87,7 @@ float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 	float integralAction = KI * iterm;
 	return saturateThrottle(proportionalAction + integralAction, &saturate);
 }
+
 
 void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
 				   float Accel, float Brake, float Speed, float CruiseSpeed, 
@@ -161,6 +162,24 @@ void CruiseControl(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bo
 		}
 		break;
 	}
+}
+
+
+// assignemnt function
+void _CruiseState(CruiseState *lhs, CruiseState rhs)
+{
+	*lhs = rhs;
+}
+
+//equality function
+int _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
+	return lhs == rhs;
+}
+
+
+//string conversion function
+char*_CruiseState_to_text(){
+
 }
 
 int main(){
