@@ -20,7 +20,6 @@ typedef struct {
     float lastCruiseSpeed;
 } CruiseControlState;
 
-
 void _CruiseState(CruiseState *lhs, CruiseState rhs);
 int _eq_CruiseState(CruiseState lhs, CruiseState rhs);
 char* _CruiseState_to_text(CruiseState state);

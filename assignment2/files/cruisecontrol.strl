@@ -4,6 +4,7 @@
   constant ON: CruiseState;
   constant STDBY: CruiseState;
   constant DISABLE: CruiseState;
+  constant init: CruiseState;
 
   input On;
   input Off;
@@ -27,10 +28,11 @@
   function isPressed(float): boolean;
 
   var
-    currentState: CruiseState,
+    currentState := init,
     cruiseSpd: float,
     lastCruiseSpd: float,
     isGoingOn: boolean
+    
   in
   loop
     pause;
