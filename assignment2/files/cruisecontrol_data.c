@@ -177,9 +177,40 @@ int _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
 }
 
 
-//string conversion function
-char*_CruiseState_to_text(){
+//string conversion function 1
+char* _CruiseState_to_text(CruiseState state)
+{
+    switch (state) {
+        case OFF:    return "OFF";
+        case ON:     return "ON";
+        case STDBY:  return "STDBY";
+        case DISABLE:return "DISABLE";
+        default:     return "UNKNOWN";
+    }
+}
 
+//string conversion function 2
+void _text_to_CruiseState(CruiseState *state, char *text)
+{
+    if (strcmp(text, "OFF") == 0)
+        *state = OFF;
+    else if (strcmp(text, "ON") == 0)
+        *state = ON;
+    else if (strcmp(text, "STDBY") == 0)
+        *state = STDBY;
+    else if (strcmp(text, "DISABLE") == 0)
+        *state = DISABLE;
+    else
+        *state = OFF; // fallback default
+}
+
+//string conversion function 3
+int _check_CruiseState(char *text)
+{
+    return (strcmp(text, "OFF") == 0 ||
+            strcmp(text, "ON") == 0 ||
+            strcmp(text, "STDBY") == 0 ||
+            strcmp(text, "DISABLE") == 0);
 }
 
 int main(){
