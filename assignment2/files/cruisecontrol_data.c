@@ -109,7 +109,7 @@ void CruiseControl_off(bool On, bool Off, bool Resume, bool Set, bool QuickDecel
 void CruiseControl_on(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
 				   float Accel, float Brake, float Speed, float CruiseSpeed, 
 				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
-
+float cruiseLast = 0;
 	if(Off){
 			cruiseState = OFF;
 		} else if (isBrakePressed(Brake)){
@@ -147,7 +147,7 @@ void CruiseControl_on(bool On, bool Off, bool Resume, bool Set, bool QuickDecel,
 void CruiseControl_disable(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
 				   float Accel, float Brake, float Speed, float CruiseSpeed, 
 				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
-	
+	float cruiseLast = 0;
 	if(Off){
 			cruiseState = OFF;
 		} else if(!(isAccelPressed(Accel)) || (30<Speed<150)){
@@ -161,7 +161,7 @@ void CruiseControl_disable(bool On, bool Off, bool Resume, bool Set, bool QuickD
 void CruiseControl_STDBY(bool On, bool Off, bool Resume, bool Set, bool QuickDecel, bool QuickAccel,
 				   float Accel, float Brake, float Speed, float CruiseSpeed, 
 				   float ThrottleCmd, CruiseState cruiseState, int isGoingOn) {
-
+float cruiseLast = 0;
 	if(Off){
 			cruiseState = OFF;
 		}else if(Resume){
