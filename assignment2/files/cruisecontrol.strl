@@ -151,12 +151,14 @@
       if currentState = DISABLE then
          if not isPressed(?Accel) and (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
            currentState := ON;
+           isGoingOn := 1;
            cruiseSpd := lastCruiseSpd;
+          emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+           emit CruiseState(currentState);
            exit STEP_TRANSITION;
          else
            currentState := OFF;
-           isGoingOn := 1;
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+           isGoingOn := 0;
            emit CruiseState(currentState);
            exit STEP_TRANSITION;
        end;
