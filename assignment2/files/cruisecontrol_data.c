@@ -3,7 +3,7 @@
 
 
 
-CruiseState init = OFF;
+CruiseState init = CRUISE_OFF;
 //Page 12 lab 1
 
 // void BoolArray ( BoolArray∗ , BoolArray );
@@ -87,10 +87,10 @@ int _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
 char* _CruiseState_to_text(CruiseState state)
 {
     switch (state) {
-        case OFF:    return "OFF";
-        case ON:     return "ON";
-        case STDBY:  return "STDBY";
-        case DISABLE:return "DISABLE";
+        case CRUISE_OFF:    return "OFF";
+        case CRUISE_ON:     return "ON";
+        case CRUISE_STDBY:  return "STDBY";
+        case CRUISE_DISABLE:return "DISABLE";
         default:     return "UNKNOWN";
     }
 }
@@ -99,15 +99,15 @@ char* _CruiseState_to_text(CruiseState state)
 void _text_to_CruiseState(CruiseState *state, char *text)
 {
     if (strcmp(text, "OFF") == 0)
-        *state = OFF;
+        *state = CRUISE_OFF;
     else if (strcmp(text, "ON") == 0)
-        *state = ON;
+        *state = CRUISE_ON;
     else if (strcmp(text, "STDBY") == 0)
-        *state = STDBY;
+        *state = CRUISE_STDBY;
     else if (strcmp(text, "DISABLE") == 0)
-        *state = DISABLE;
+        *state = CRUISE_DISABLE;
     else
-        *state = OFF; // fallback default
+        *state = CRUISE_OFF; // fallback default
 }
 
 //string conversion function 3

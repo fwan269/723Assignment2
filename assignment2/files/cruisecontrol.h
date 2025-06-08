@@ -5,10 +5,10 @@
 #define SPEED_INC 2.5
 #define PEDAL_MIN 3.0
 typedef enum {
-    OFF,
-    ON,
-    STDBY,
-    DISABLE
+    CRUISE_OFF,
+    CRUISE_ON,
+    CRUISE_STDBY,
+    CRUISE_DISABLE
 } CruiseState;
 
 void _CruiseState(CruiseState *lhs, CruiseState rhs);
