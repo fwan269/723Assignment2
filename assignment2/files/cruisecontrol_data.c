@@ -1,26 +1,7 @@
 #include <stdbool.h>
+#include "cruisecontrol.h"
 
-
-
-typedef enum {
-    OFF,
-    ON,
-    STDBY,
-    DISABLE
-} CruiseState;
-
-typedef struct {
-    float CruiseSpeed;
-    float ThrottleCmd;
-    CruiseState cruiseState;
-    int isGoingOn;
-    float lastCruiseSpeed;
-} CruiseControlState;
-
-
-#include <stdbool.h>
-
-
+CruiseState init = OFF;
 //Page 12 lab 1
 
 // void BoolArray ( BoolArray∗ , BoolArray );
@@ -211,26 +192,4 @@ int _check_CruiseState(char *text)
             strcmp(text, "ON") == 0 ||
             strcmp(text, "STDBY") == 0 ||
             strcmp(text, "DISABLE") == 0);
-}
-
-int main(){
-
-	bool On = false;
-	bool Off = true;
-	bool Resume = false;
-	bool Set = false;
-	bool QuickDecel = false;
-	bool QuickAccel = false;
-	float Accel = 0.0;   // Accelerator pedal sensor
-	float Brake = 0.0;   // Brake pedal sensor
-	float Speed = 0.0;   // Vehicle speed
-	float CruiseSpeed = 0.0;
-	float ThrottleCmd = 0.0;
-	CruiseState cruiseState = OFF;
-
-	bool isGoingOn = 0;
-
-	while (1){
-		CruiseControl(On, Off, Resume, Set, QuickDecel, QuickAccel, Accel, Brake, Speed, CruiseSpeed, ThrottleCmd, cruiseState, isGoingOn);
-	}
 }
