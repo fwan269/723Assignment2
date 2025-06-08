@@ -29,7 +29,7 @@
 
   var 
     currentState := init: CruiseState,
-    cruiseSpd:= 0.0: float,
+    cruiseSpd:= 0.0,
     lastCruiseSpd: float,
     isGoingOn: integer
   in 
