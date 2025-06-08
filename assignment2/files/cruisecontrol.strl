@@ -46,6 +46,7 @@
             lastCruiseSpd := cruiseSpd;
             currentState := ON;
             isGoingOn := 1;
+            emit ThrottleCmd(0.0);
             exit STEP_TRANSITION;
           end
         end
@@ -55,6 +56,7 @@
         present Off then
           currentState := OFF;
           emit CruiseState(currentState);
+          emit ThrottleCmd(1.0);
           exit STEP_TRANSITION;
         end;
 
@@ -62,6 +64,7 @@
           if isPressed(?Brake) then
             currentState := STDBY;
             emit CruiseState(currentState);
+            emit ThrottleCmd(0.0);
             exit STEP_TRANSITION;
           end
         end;
@@ -70,6 +73,7 @@
           if isPressed(?Accel) then
             currentState := DISABLE;
             emit CruiseState(currentState);
+            emit ThrottleCmd(2.0);
             exit STEP_TRANSITION;
           end
         end;
@@ -77,11 +81,14 @@
         present Set then
           if ?Speed < SPEED_MIN then
           cruiseSpd := SPEED_MIN;
+          emit ThrottleCmd(3.0);
           else
           if ?Speed > SPEED_MAX then
           cruiseSpd := SPEED_MAX;
+          emit ThrottleCmd(0.0);
           else
           cruiseSpd := ?Speed;
+          emit ThrottleCmd(0.0);
           end
   end
         end;
@@ -114,11 +121,13 @@
       if currentState = STDBY then
         present Off then
           currentState := OFF;
+          emit ThrottleCmd(0.0);
           exit STEP_TRANSITION;
         end;
 
         present Resume then
           if isPressed(?Accel) or not (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
+             emit ThrottleCmd(0.0);
             currentState := DISABLE;
           else
             currentState := ON;
