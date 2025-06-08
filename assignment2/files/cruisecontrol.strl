@@ -4,7 +4,7 @@
   constant ON: CruiseState;
   constant STDBY: CruiseState;
   constant DISABLE: CruiseState;
-  constant init: CruiseState;
+  constant init = OFF: CruiseState;
 
   input On;
   input Off;
@@ -31,7 +31,7 @@
   var 
     currentState := init: CruiseState,
     cruiseSpd:= SPEED_INT:float,
-    lastCruiseSpd: float,
+    lastCruiseSpd:= SPEED_INT: float,
     isGoingOn: integer
   in 
   loop
