@@ -168,7 +168,7 @@
            currentState := ON;
            isGoingOn := 1;
            cruiseSpd := lastCruiseSpd;
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+           emit ThrottleCmd(regulateThrottle(isGoingOn, ?Accel, ?Speed));
            emit CruiseState(currentState);
            emit CruiseSpeed(cruiseSpd);
            exit STEP_TRANSITION;
