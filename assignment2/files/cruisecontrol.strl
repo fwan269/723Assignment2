@@ -3,13 +3,13 @@
 %          Tai Martinez Grant
 % Release date: 24 MAy 2011
 % Version-2
-% To do in future: environment constraints, exclusion relations and observers for verification
-% Also to check code coverage and generate test cases
-% Note - SimpleLift.esi scenerio file available for simulation
-% Changes: Converted to Esterel V5 syntax -- Simon
+% esterel crusie controler designed for different states
+% 
   
-  
+ %module for the unit controller 
   module UnitControl:
+
+  %initialize the type cruisestate with constants
   type CruiseState;
   constant OFF: CruiseState;
   constant ON: CruiseState;
@@ -17,6 +17,7 @@
   constant DISABLE: CruiseState;
   constant init = OFF: CruiseState;
 
+%initialize the input variables
   input On;
   input Off;
   input Resume;
@@ -27,28 +28,36 @@
   input Brake: float;
   input Speed: float;
 
+%initialize the output variables
   output CruiseSpeed: float;
   output ThrottleCmd: float;
   output CruiseState: CruiseState;
 
+
+%constants to limit the speed and accelerations
   constant SPEED_MIN: float;
   constant SPEED_MAX: float;
   constant SPEED_INC: float;
   constant SPEED_INT: float;
 
+% function to run the regulate throttle in cruisecontrol.c
   function regulateThrottle(integer, float, float): float;
   function isPressed(float): boolean;
 
+% function to run the regulate throttle in cruisecontrol.c
   var 
     currentState := init: CruiseState,
     cruiseSpd:= SPEED_INT:float,
     lastCruiseSpd:= SPEED_INT: float,
     isGoingOn := 0: integer
   in 
+
+  % loops through the different states for the cruise controller
   loop
     pause;
     trap STEP_TRANSITION in
 
+%if state of check if the pedel is pressed and on button not presed
       if currentState = OFF then
        present Accel then
           if isPressed(?Accel) then
@@ -67,6 +76,7 @@
           end
         end;
 
+%if on is presed jump to on and update the cruise speed with speed given
         present On then
           present Speed then
             cruiseSpd := ?Speed;
@@ -81,22 +91,26 @@
         end
       end;
 
+%if state is on run this code
       if currentState = ON then
+
+      %for off button present state 
         present Off then
           currentState := OFF;
           emit CruiseState(currentState);
           exit STEP_TRANSITION;
         end;
 
+%if accel pedel is pressed
        present Accel then
           if isPressed(?Accel) then
             currentState := DISABLE;
-            isGoingOn := 0;
             emit CruiseState(currentState);
             exit STEP_TRANSITION;
           end
        end;
 
+%if brake is pressed
        present Brake then
           if isPressed(?Brake) then
             currentState := STDBY;
@@ -105,6 +119,7 @@
           end
         end;
 
+%set speed to within boundry
         present Set then
           if ?Speed < SPEED_MIN then
           cruiseSpd := SPEED_MIN;
@@ -116,6 +131,7 @@
         end
         end;
 
+%if quick accel is pressed
         present QuickAccel then
           cruiseSpd := cruiseSpd + SPEED_INC;
           if cruiseSpd > SPEED_MAX then
@@ -132,6 +148,8 @@
           end
         end;
 
+
+%if speed was selected
         present Speed then
           isGoingOn := 1;
           cruiseSpd := lastCruiseSpd;
@@ -144,12 +162,16 @@
         exit STEP_TRANSITION;
       end;
 
+% if stdy is selected
       if currentState = STDBY then
+
+      %if off return to off
         present Off then
           currentState := OFF;
           exit STEP_TRANSITION;
         end;
 
+%if resume return to the last cruise speed and enter disable
         present Resume then
           if isPressed(?Accel) or not (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
             currentState := DISABLE;
@@ -161,6 +183,7 @@
         end
       end;
 
+%if desable check if speed is within bounds if so go to on
       if currentState = DISABLE then
          if (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
            currentState := ON;
@@ -170,6 +193,8 @@
            emit CruiseState(currentState);
            emit CruiseSpeed(cruiseSpd);
            exit STEP_TRANSITION;
+
+%if not go to off and update accel
          else if isPressed(?Accel) then
            currentState := OFF;
            isGoingOn := 0;
@@ -212,6 +237,7 @@
   output ThrottleCmd: float;
   output CruiseState: CruiseState;
 
+%collectes signel and sends to simulation
   run UnitControl[ signal On/On;
                   signal Off/Off;
                   signal Resume/Resume;
