@@ -24,15 +24,14 @@
   constant SPEED_MAX: float;
   constant SPEED_INC: float;
 
-  function regulateThrottle(boolean, float, float): float;
+  function regulateThrottle(integer, float, float): float;
   function isPressed(float): boolean;
 
   var
     currentState := init: CruiseState,
     cruiseSpd: float,
     lastCruiseSpd: float,
-    isGoingOn: boolean
-    
+    isGoingOn: integer
   in
   loop
     pause;
@@ -45,7 +44,7 @@
             emit CruiseSpeed(cruiseSpd);
             lastCruiseSpd := cruiseSpd;
             currentState := ON;
-            isGoingOn := true;
+            isGoingOn := 1;
             exit STEP_TRANSITION;
           end
         end
@@ -106,7 +105,7 @@
           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
         end;
 
-        isGoingOn := false;
+        isGoingOn := 0;
         emit CruiseState(currentState);
         exit STEP_TRANSITION;
       end;

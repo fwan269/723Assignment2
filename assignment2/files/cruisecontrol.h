@@ -11,21 +11,12 @@ typedef enum {
     DISABLE
 } CruiseState;
 
-
-typedef struct {
-    float CruiseSpeed;
-    float ThrottleCmd;
-    CruiseState cruiseState;
-    int isGoingOn;
-    float lastCruiseSpeed;
-} CruiseControlState;
-
 void _CruiseState(CruiseState *lhs, CruiseState rhs);
 int _eq_CruiseState(CruiseState lhs, CruiseState rhs);
 char* _CruiseState_to_text(CruiseState state);
 void _text_to_CruiseState(CruiseState *state, char *text);
 int _check_CruiseState(char *text);
 
-float regulateThrottle(bool isGoingOn, float cruiseSpeed, float vehicleSpeed);
+float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed);
 bool isBrakePressed(float brake);
 bool isAccelPressed(float accel);
