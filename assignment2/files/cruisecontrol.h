@@ -1,5 +1,5 @@
 #include <stdbool.h>
-
+#include <stdint.h>
 #define SPEED_MIN 30.0
 #define SPEED_MAX 150.0
 #define SPEED_INC 2.5

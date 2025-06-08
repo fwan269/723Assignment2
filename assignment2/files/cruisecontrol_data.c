@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "cruisecontrol.h"
+#include <stdint.h>
 
 
 
