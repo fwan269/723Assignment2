@@ -1,3 +1,14 @@
+% Authors: Iain J Ross
+%          Fang Ping 
+%          Tai
+% Release date: 24 MAy 2011
+% Version-2
+% To do in future: environment constraints, exclusion relations and observers for verification
+% Also to check code coverage and generate test cases
+% Note - SimpleLift.esi scenerio file available for simulation
+% Changes: Converted to Esterel V5 syntax -- Simon
+  
+  
   module UnitControl:
   type CruiseState;
   constant OFF: CruiseState;
@@ -57,12 +68,14 @@
         end;
 
         present On then
+          currentState := ON;
+          emit CruiseState(currentState);
           present Speed then
             cruiseSpd := ?Speed;
             lastCruiseSpd := cruiseSpd;
-            currentState := ON;
+            
             isGoingOn := 1;
-            emit CruiseState(currentState);
+         
             emit CruiseSpeed(cruiseSpd);
             emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
             exit STEP_TRANSITION;
@@ -80,13 +93,13 @@
 
         present Brake then
           if isPressed(?Brake) then
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Accel));
+           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
           end
         end;
 
         present Accel then
           if isPressed(?Accel) then
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Accel));
+           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
           end
         end;
 
@@ -158,7 +171,7 @@
            isGoingOn := 1;
            cruiseSpd := lastCruiseSpd;
            emit CruiseState(currentState);
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Accel));
+           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
            emit CruiseSpeed(cruiseSpd);
            exit STEP_TRANSITION;
        end;
