@@ -50,7 +50,6 @@
     trap STEP_TRANSITION in
 
       if currentState = OFF then
-
        present Accel then
           if isPressed(?Accel) then
             currentState := DISABLE;
@@ -176,9 +175,9 @@
        isGoingOn := 0;
       end;
 
-      %emit CruiseState(currentState);
-      %emit CruiseSpeed(cruiseSpd);
-      %emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+      emit CruiseState(currentState);
+      emit CruiseSpeed(cruiseSpd);
+      emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
     end trap;
   end loop;
   end var;
