@@ -1,12 +1,12 @@
 #include <stdbool.h>
 #include "cruisecontrol.h"
 #include <stdint.h>
-
-
-
+/* initial state of the cruise control*/
 CruiseState init = CRUISE_OFF;
 
 
+
+/* if the pedal accel or deccl is high enough trigger pedek signal*/
 int isPressed(float pedal) {
    if(pedal>3.0){
 	return 1;
@@ -65,13 +65,13 @@ float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 	return saturateThrottle(proportionalAction + integralAction, &saturate);
 }
 
-// assignment function
+// assignment function for the enum
 void _CruiseState(CruiseState *lhs, CruiseState rhs)
 {
 	*lhs = rhs;
 }
 
-//equality function
+//equality function for the enum
 int _eq_CruiseState(CruiseState lhs, CruiseState rhs){
 	
 	if(lhs != rhs){
@@ -82,7 +82,7 @@ int _eq_CruiseState(CruiseState lhs, CruiseState rhs){
 }
 
 
-//string conversion function 1
+//string conversion function 1 for the enum
 char* _CruiseState_to_text(CruiseState state)
 {
     switch (state) {
@@ -94,7 +94,7 @@ char* _CruiseState_to_text(CruiseState state)
     }
 }
 
-// Simple function to compare two strings, returns 1 if equal, 0 if not
+// Simple function to compare two strings, returns 1 if equal, 0 if not for the enum
 int my_strcmp(const char *a, const char *b) {
     while (*a && *b) {
         if (*a != *b) return 0;
@@ -104,6 +104,7 @@ int my_strcmp(const char *a, const char *b) {
     return (*a == '\0' && *b == '\0');
 }
 
+// text to cruise state for the enum to be displayed
 void _text_to_CruiseState(CruiseState *state, char *text)
 {
     if (my_strcmp(text, "OFF"))
@@ -118,6 +119,8 @@ void _text_to_CruiseState(CruiseState *state, char *text)
         *state = CRUISE_OFF; // fallback default
 }
 
+
+// check the text is accurate
 int _check_CruiseState(char *text)
 {
     return (my_strcmp(text, "OFF") ||
