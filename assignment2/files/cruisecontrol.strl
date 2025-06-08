@@ -149,7 +149,7 @@
       end;
 
       if currentState = DISABLE then
-         if isPressed(?Accel) and (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
+         if (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
            currentState := ON;
            cruiseSpd := lastCruiseSpd;
            isGoingOn := 1;
