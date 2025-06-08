@@ -45,7 +45,7 @@ output ThrottleCmd: float;
       signal Speed/Speed_SpeedRegulator;
       signal Accel/Accel_SpeedRegulator;
       signal CruiseState_Main/State_SpeedRegulator;
-      signal CruiseSpeed/Speed_SpeedRegulator]
+      signal CruiseSpeed/CruiseSpeed_SpeedRegulator]
     ||
     run ThrottleRegulator [
       signal CruiseSpeed/CruiseSpeed_ThrottleRegulator;
