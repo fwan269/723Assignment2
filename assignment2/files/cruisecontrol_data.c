@@ -6,8 +6,8 @@
 
 CruiseState init = CRUISE_OFF;
 
-bool isPressed(float pedal) {
-   return pedal > 3.0;
+bool isPressed(float *pedal) {
+   return *pedal > 3.0;
 }
 
 /*
