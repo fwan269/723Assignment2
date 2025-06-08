@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 
 #define SPEED_MIN 30.0
 #define SPEED_MAX 150.0
@@ -12,7 +13,7 @@ typedef enum {
 } CruiseState;
 
 void _CruiseState(CruiseState *lhs, CruiseState rhs);
-int _eq_CruiseState(CruiseState lhs, CruiseState rhs);
+int _eq_CruiseState(CruiseState *lhs, CruiseState rhs);
 char* _CruiseState_to_text(CruiseState state);
 void _text_to_CruiseState(CruiseState *state, char *text);
 int _check_CruiseState(char *text);

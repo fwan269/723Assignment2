@@ -1,5 +1,7 @@
 #include <stdbool.h>
 #include "cruisecontrol.h"
+#include <string.h>
+
 
 CruiseState init = OFF;
 //Page 12 lab 1
@@ -77,7 +79,7 @@ void _CruiseState(CruiseState *lhs, CruiseState rhs)
 
 //equality function
 int _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
-	return lhs == rhs;
+	return *lhs == rhs;
 }
 
 
