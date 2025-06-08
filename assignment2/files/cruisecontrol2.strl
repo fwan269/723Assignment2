@@ -44,8 +44,8 @@ output ThrottleCmd: float;
       signal Set/Set_SpeedRegulator;
       signal Speed/Speed_SpeedRegulator;
       signal Accel/Accel_SpeedRegulator;
-      signal CruiseState_Main/CruiseState_SpeedRegulator;
-      signal CruiseSpeed/CruiseSpeed_SpeedRegulator]
+      signal CruiseState_Main/State_SpeedRegulator;
+      signal CruiseSpeed/Speed_SpeedRegulator]
     ||
     run ThrottleRegulator [
       signal CruiseSpeed/CruiseSpeed_ThrottleRegulator;
@@ -137,7 +137,7 @@ output CruiseState_CruiseStateManager: integer; % 0:OFF 1:ON 2:STDBY 3:DISABLE %
         end if;
 
         if currentState = 3 then % DISABLE state
-          present OFF_CruiseStateManager then
+          present Off_CruiseStateManager then
             currentState := 0; % Transition to off state
             exit T_CRUISESTATE;
           end present;
@@ -179,7 +179,7 @@ output CruiseSpeed_SpeedRegulator: float;
       trap T_CRUISESPEED in
 
         if State_SpeedRegulator = 0 then % OFF state
-          NewCruiseSpeed := 0.0; % No speed when OFF
+          NewCruiseSpeed := Zero; % No speed when OFF
           exit T_CRUISESPEED;
         end if;
 
