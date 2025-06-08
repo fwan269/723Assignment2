@@ -39,6 +39,23 @@
     trap STEP_TRANSITION in
 
       if currentState = OFF then
+
+       present Accel then
+          if isPressed(?Accel) then
+            currentState := DISABLE;
+            emit CruiseState(currentState);
+            exit STEP_TRANSITION;
+          end
+       end;
+
+       present Brake then
+          if isPressed(?Brake) then
+            currentState := STDBY;
+            emit CruiseState(currentState);
+            exit STEP_TRANSITION;
+          end
+        end;
+
         present On then
           present Speed then
             cruiseSpd := ?Speed;
