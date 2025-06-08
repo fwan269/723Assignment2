@@ -49,7 +49,7 @@
             emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
             exit STEP_TRANSITION;
           
-        end
+        end if
       end;
 
       if currentState = ON then
