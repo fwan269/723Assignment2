@@ -79,9 +79,9 @@ void _CruiseState(CruiseState *lhs, CruiseState rhs)
 }
 
 //equality function
-int _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
+bool _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
 	
-	return (*lhs == rhs) ? 1 : 0;
+	return (*lhs == rhs);
 }
 
 
