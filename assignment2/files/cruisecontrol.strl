@@ -24,7 +24,7 @@
   constant SPEED_MAX: float;
   constant SPEED_INC: float;
 
-  function regulateThrottle(integer, float, float): integer;
+  function regulateThrottle(integer, float, float): float;
   function isPressed(float): boolean;
 
   var
