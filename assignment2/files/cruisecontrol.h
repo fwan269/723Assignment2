@@ -11,8 +11,10 @@ typedef enum {
     CRUISE_DISABLE
 } CruiseState;
 
+#ifndef CRUISECONTROL_H
+#define CRUISECONTROL_H
 void _CruiseState(CruiseState *lhs, CruiseState rhs);
-int _eq_CruiseState(CruiseState *lhs, CruiseState rhs);
+int  _eq_CruiseState(CruiseState *lhs, CruiseState rhs);
 char* _CruiseState_to_text(CruiseState state);
 void _text_to_CruiseState(CruiseState *state, char *text);
 int _check_CruiseState(char *text);
@@ -20,3 +22,5 @@ int _check_CruiseState(char *text);
 float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed);
 bool isBrakePressed(float brake);
 bool isAccelPressed(float accel);
+
+#endif // CRUISECONTROL_H
