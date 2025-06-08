@@ -135,6 +135,9 @@
 
         present Speed then
           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+          cruiseSpd := ?Speed;
+          lastCruiseSpd := cruiseSpd;
+          emit CruiseSpeed(?Speed);
         end;
 
         isGoingOn := 0;
