@@ -24,7 +24,7 @@ char* _CruiseState_to_text(CruiseState state);
 void _text_to_CruiseState(CruiseState *state, char *text);
 int _check_CruiseState(char *text);
 
-float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed);
+float regulateThrottle(int isGoingOn, float float(cruiseSpeed), float float(vehicleSpeed));
 int isPressed(float pedal);
 
 #endif // CRUISECONTROL_H

@@ -14,23 +14,23 @@
   input QuickAccel;
   input Accel: float;
   input Brake: float;
-  input Speed: float;
+  input Speed: integer;
 
   output CruiseSpeed: float;
   output ThrottleCmd: float;
   output CruiseState: CruiseState;
 
-  constant SPEED_MIN: float;
-  constant SPEED_MAX: float;
-  constant SPEED_INC: float;
+  constant SPEED_MIN: integer;
+  constant SPEED_MAX: integer;
+  constant SPEED_INC: integer;
 
-  function regulateThrottle(integer, float, float): float;
+  function regulateThrottle(integer, integer, integer): float;
   function isPressed(float): boolean;
 
-  var
+  var 
     currentState := init: CruiseState,
-    cruiseSpd: float,
-    lastCruiseSpd: float,
+    cruiseSpd := 0 : integer,
+    lastCruiseSpd:= 0 : integer,
     isGoingOn: integer
   in
   
