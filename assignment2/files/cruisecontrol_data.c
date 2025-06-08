@@ -48,7 +48,7 @@ float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 {
 	static const float KP = 8.113;
 	static const float KI = 0.5;
-	static bool saturate = true;
+	static bool saturate = false;
 	static float iterm = 0;
 	
 	if (isGoingOn == 1) {
