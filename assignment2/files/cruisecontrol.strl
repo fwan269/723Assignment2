@@ -39,9 +39,6 @@
     trap STEP_TRANSITION in
 
       if currentState = OFF then
-
-      present Off then
-      emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
         present On then
           present Speed then
             cruiseSpd := ?Speed;
@@ -50,10 +47,10 @@
             isGoingOn := 1;
             emit CruiseState(currentState);
             emit CruiseSpeed(cruiseSpd);
+            emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
             exit STEP_TRANSITION;
           end
         end
-      end
       end;
 
       if currentState = ON then
