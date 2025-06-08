@@ -23,7 +23,7 @@ RETURNS: throttle output (ThrottleCmd)
 float saturateThrottle(float throttleIn, bool* saturate)
 {
 	static const float THROTTLESATMAX = 45.0;
-	if (throttleIn > THROTTLESATMAX && *saturate == true ) {
+	if (throttleIn > THROTTLESATMAX) {
 		*saturate = true;
 		return THROTTLESATMAX;
 	}
@@ -55,7 +55,7 @@ float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 		iterm = 0;	// reset the integral action
 		saturate = true;	
 	} else if(isGoingOn == 0){
-		saturate = false;
+		return cruiseSpeed;
 	}
 	float error = cruiseSpeed - vehicleSpeed;
 	float proportionalAction = error * KP;
