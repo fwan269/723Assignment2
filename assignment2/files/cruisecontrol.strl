@@ -32,7 +32,7 @@
     currentState := init: CruiseState,
     cruiseSpd:= SPEED_INT:float,
     lastCruiseSpd:= SPEED_INT: float,
-    isGoingOn: integer
+    isGoingOn := 0: integer
   in 
   loop
     pause;
