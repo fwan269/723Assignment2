@@ -23,13 +23,14 @@
   constant SPEED_MIN: float;
   constant SPEED_MAX: float;
   constant SPEED_INC: float;
+  constant SPEED_INT: float;
 
   function regulateThrottle(integer, float, float): float;
   function isPressed(float): boolean;
 
   var 
     currentState := init: CruiseState,
-    cruiseSpd:= 0.0,
+    cruiseSpd:= SPEED_INT:float,
     lastCruiseSpd: float,
     isGoingOn: integer
   in 
