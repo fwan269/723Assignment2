@@ -88,7 +88,6 @@
           if isPressed(?Accel) then
            emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Accel));
           end
-          
         end;
 
         present Set then
