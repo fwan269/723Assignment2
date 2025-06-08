@@ -7,7 +7,7 @@
 CruiseState init = CRUISE_OFF;
 
 int isPressed(float *pedal) {
-   if(pedal>3.0){
+   if(*pedal>3.0){
 	return 1;
    } else {
 	return 0;
