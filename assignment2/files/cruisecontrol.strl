@@ -82,7 +82,6 @@
       end;
 
       if currentState = ON then
-        emit CruiseSpeed(cruiseSpd);
         present Off then
           currentState := OFF;
           emit CruiseState(currentState);
