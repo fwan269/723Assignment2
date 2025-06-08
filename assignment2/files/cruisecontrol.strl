@@ -29,12 +29,10 @@
 
   var
     currentState := init: CruiseState,
-    cruiseSpd: real,
-    lastCruiseSpd: real,
+    cruiseSpd:= 0: integer,
+    lastCruiseSpd:=0: integer,
     isGoingOn: integer
   in
-    cruiseSpd:= 0.0;
-    lastCruiseSpd := 0.0;
   loop
     pause;
     trap STEP_TRANSITION in
