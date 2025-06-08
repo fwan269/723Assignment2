@@ -11,6 +11,8 @@
 #define SPEED_MAX 150.0
 #define SPEED_INC 2.5
 #define PEDAL_MIN 3.0
+#define SPEED_INT 0.0
+
 typedef enum {
     CRUISE_OFF,
     CRUISE_ON,
