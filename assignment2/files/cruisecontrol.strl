@@ -166,7 +166,7 @@
       if currentState = DISABLE then
          if (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
            currentState := ON;
-           isGoingOn := 1;
+           isGoingOn := 0;
            cruiseSpd := lastCruiseSpd;
            emit ThrottleCmd(regulateThrottle(isGoingOn, ?Accel, ?Speed));
            emit CruiseState(currentState);
