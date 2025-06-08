@@ -16,7 +16,7 @@
   input Brake: float;
   input Speed: integer;
 
-  output CruiseSpeed: float;
+  output CruiseSpeed: integer;
   output ThrottleCmd: float;
   output CruiseState: CruiseState;
 
