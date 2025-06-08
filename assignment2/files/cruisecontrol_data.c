@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include "cruisecontrol.h"
 #include <stdint.h>
-/* initial state of the cruise control*/
 CruiseState init = CRUISE_OFF;
 
 
