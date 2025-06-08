@@ -35,7 +35,6 @@
     isGoingOn := 0: integer
   in 
   loop
-    pause;
     trap STEP_TRANSITION in
 
       if currentState = OFF then
