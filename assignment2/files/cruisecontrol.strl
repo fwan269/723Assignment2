@@ -89,15 +89,20 @@
           exit STEP_TRANSITION;
         end;
 
-        present Brake then
-          if isPressed(?Brake) then
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
-          end
-        end;
-
-        present Accel then
+       present Accel then
           if isPressed(?Accel) then
-           emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+            currentState := DISABLE;
+            isGoingOn := 0;
+            emit CruiseState(currentState);
+            exit STEP_TRANSITION;
+          end
+       end;
+
+       present Brake then
+          if isPressed(?Brake) then
+            currentState := STDBY;
+            emit CruiseState(currentState);
+            exit STEP_TRANSITION;
           end
         end;
 
