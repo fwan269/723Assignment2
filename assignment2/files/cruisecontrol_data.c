@@ -1,18 +1,7 @@
 #include <stdbool.h>
+#include "cruisecontrol.h"
 
-
-
-typedef enum {
-    OFF,
-    ON,
-    STDBY,
-    DISABLE
-} CruiseState;
-
-
-#include <stdbool.h>
-
-
+CruiseState init = OFF;
 //Page 12 lab 1
 
 // void BoolArray ( BoolArray∗ , BoolArray );
