@@ -54,6 +54,8 @@ float regulateThrottle(int isGoingOn, float cruiseSpeed, float vehicleSpeed)
 	if (isGoingOn == 1) {
 		iterm = 0;	// reset the integral action
 		saturate = true;	
+	} else if(isGoingOn == 0){
+		saturate = false;
 	}
 	float error = cruiseSpeed - vehicleSpeed;
 	float proportionalAction = error * KP;
