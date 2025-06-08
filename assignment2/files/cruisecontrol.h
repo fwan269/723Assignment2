@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <string.h>
 
 #define SPEED_MIN 30.0
 #define SPEED_MAX 150.0

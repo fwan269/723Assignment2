@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include "cruisecontrol.h"
-#include <string.h>
+
 
 
 CruiseState init = OFF;
