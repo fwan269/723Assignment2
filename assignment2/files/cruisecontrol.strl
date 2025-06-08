@@ -80,13 +80,11 @@
         present Set then
           if ?Speed < SPEED_MIN then
           cruiseSpd := SPEED_MIN;
-          else
-          if ?Speed > SPEED_MAX then
+          else if ?Speed > SPEED_MAX then
           cruiseSpd := SPEED_MAX;
           else
           cruiseSpd := ?Speed;
           end
-  end
         end;
 
         present QuickAccel then
@@ -146,6 +144,7 @@
 
       emit CruiseState(currentState);
       emit CruiseSpeed(cruiseSpd);
+      end
     end trap;
   end loop;
   end var;
