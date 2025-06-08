@@ -86,8 +86,7 @@ output CruiseState_CruiseStateManager: integer; % 0:OFF 1:ON 2:STDBY 3:DISABLE %
               currentState := 1; % Transition to ON state
             end if;
         end if;
-
-      end T_CRUISESTATE;
+      end trap;
     end loop;
   end var;
 end module
@@ -143,6 +142,8 @@ output CruiseSpeed_SpeedRegulator: float;
           end present;
         end if;
       end trap
+    end loop
+  end var
 end module
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -212,29 +213,29 @@ output ThrottleCmd: float;
     end loop]
     ||
     run CruiseStateManager [
-      signal On/On_CruiseStateManager,
-      signal Off/Off_CruiseStateManager,
-      signal Resume/Resume_CruiseStateManager,
-      signal Accel/Accel_CruiseStateManager,
-      signal Speed/Speed_CruiseStateManager,
-      signal Brake/Brake_CruiseStateManager,
+      signal On/On_CruiseStateManager;
+      signal Off/Off_CruiseStateManager;
+      signal Resume/Resume_CruiseStateManager;
+      signal Accel/Accel_CruiseStateManager;
+      signal Speed/Speed_CruiseStateManager;
+      signal Brake/Brake_CruiseStateManager;
       signal CruiseState_Main/CruiseState_CruiseStateManager]
 
     ||
     run SpeedRegulator [
-      signal QuickAccel/QuickAccel_SpeedRegulator,
-      signal QuickDecel/QuickDecel_SpeedRegulator,
-      signal Set/Set_SpeedRegulator,
-      signal Speed/Speed_SpeedRegulator,
-      signal Accel/Accel_SpeedRegulator,
-      signal State/CruiseState_SpeedRegulator,
+      signal QuickAccel/QuickAccel_SpeedRegulator;
+      signal QuickDecel/QuickDecel_SpeedRegulator;
+      signal Set/Set_SpeedRegulator;
+      signal Speed/Speed_SpeedRegulator;
+      signal Accel/Accel_SpeedRegulator;
+      signal State/CruiseState_SpeedRegulator;
       signal CruiseSpeed/CruiseSpeed_SpeedRegulator]
     ||
     run ThrottleRegulator [
-      signal CruiseSpeed/CruiseSpeed_ThrottleRegulator,
-      signal Speed/Speed_ThrottleRegulator,
-      signal State/CruiseState_ThrottleRegulator,
-      signal Accel/Accel_ThrottleRegulator,
+      signal CruiseSpeed/CruiseSpeed_ThrottleRegulator;
+      signal Speed/Speed_ThrottleRegulator;
+      signal State/CruiseState_ThrottleRegulator;
+      signal Accel/Accel_ThrottleRegulator;
       signal ThrottleCmd/Throttle_ThrottleRegulator]
 
   end signal;
