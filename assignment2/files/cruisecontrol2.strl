@@ -11,9 +11,9 @@ constant SpeedMax : float;
 constant SpeedMin : float;
 
 %INPUTS%
-input On_CruiseStateManager,
-input Off_CruiseStateManager,
-input Resume_CruiseStateManager,
+input On_CruiseStateManager;
+input Off_CruiseStateManager;
+input Resume_CruiseStateManager;
 input Accel_CruiseStateManager: float;
 input Speed_CruiseStateManager: float;
 input Brake_CruiseStateManager: float;
@@ -142,7 +142,7 @@ output CruiseSpeed_SpeedRegulator: float;
             exit T_CRUISESPEED;
           end present;
         end if;
-      end T_CRUISESPEED;
+      end trap
 end module
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,11 +188,11 @@ end module
 module TopLevel:
 
 %Inputs%
-input On, 
-input Off,
-input Resume,
-input Set,
-input QuickDecel,
+input On;
+input Off;
+input Resume;
+input Set;
+input QuickDecel;
 input QuickAccel;
 input Accel: float;
 input Speed: float;
