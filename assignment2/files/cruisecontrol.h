@@ -1,5 +1,9 @@
 #include <stdbool.h>
 #include <stdint.h>
+#define OFF CRUISE_OFF
+#define ON CRUISE_ON
+#define STDBY CRUISE_STDBY
+#define DISABLE CRUISE_DISABLE
 #ifndef CRUISECONTROL_H
 #define CRUISECONTROL_H
 
