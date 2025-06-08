@@ -5,22 +5,10 @@
 
 
 CruiseState init = CRUISE_OFF;
-//Page 12 lab 1
 
-// void BoolArray ( BoolArray∗ , BoolArray );
-// 	int eq_BoolArray ( BoolArray , BoolArray);
-// 	char∗ BoolArray_to_text(BoolArray);
-// 	void text_to_BoolArray(BoolArray∗, char∗); 
-// int check_BoolArray (char∗) ;
-
-
-//bool isBrakePressed(float brake) {
-   // return brake > 3.0;
-//}
-
-//bool isAccelPressed(float accel) {
- //   return accel > 3.0;
-//}
+bool isPressed(float pedal) {
+   return pedal > 3.0;
+}
 
 /*
 DESCRIPTION: Saturate the throttle command to limit the acceleration.
