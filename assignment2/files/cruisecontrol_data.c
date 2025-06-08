@@ -97,16 +97,25 @@ char* _CruiseState_to_text(CruiseState state)
     }
 }
 
-//string conversion function 2
+// Simple function to compare two strings, returns 1 if equal, 0 if not
+int my_strcmp(const char *a, const char *b) {
+    while (*a && *b) {
+        if (*a != *b) return 0;
+        a++;
+        b++;
+    }
+    return (*a == '\0' && *b == '\0');
+}
+
 void _text_to_CruiseState(CruiseState *state, char *text)
 {
-    if (strcmp(text, "OFF") == 0)
+    if (my_strcmp(text, "OFF"))
         *state = CRUISE_OFF;
-    else if (strcmp(text, "ON") == 0)
+    else if (my_strcmp(text, "ON"))
         *state = CRUISE_ON;
-    else if (strcmp(text, "STDBY") == 0)
+    else if (my_strcmp(text, "STDBY"))
         *state = CRUISE_STDBY;
-    else if (strcmp(text, "DISABLE") == 0)
+    else if (my_strcmp(text, "DISABLE"))
         *state = CRUISE_DISABLE;
     else
         *state = CRUISE_OFF; // fallback default
