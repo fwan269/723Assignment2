@@ -152,6 +152,7 @@
         present Off then
           currentState := OFF;
           exit STEP_TRANSITION;
+          emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
         end;
 
         if not isPressed(?Accel) and (?Speed > SPEED_MIN and ?Speed < SPEED_MAX) then
