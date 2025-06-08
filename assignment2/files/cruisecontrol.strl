@@ -14,23 +14,23 @@
   input QuickAccel;
   input Accel: float;
   input Brake: float;
-  input Speed: integer;
+  input Speed: float;
 
   output CruiseSpeed: float;
   output ThrottleCmd: float;
   output CruiseState: CruiseState;
 
-  constant SPEED_MIN: integer;
-  constant SPEED_MAX: integer;
-  constant SPEED_INC: integer;
+  constant SPEED_MIN: float;
+  constant SPEED_MAX: float;
+  constant SPEED_INC: float;
 
-  function regulateThrottle(integer, integer, integer): float;
+  function regulateThrottle(integer, float, float): float;
   function isPressed(float): boolean;
 
   var 
     currentState := init: CruiseState,
-    cruiseSpd := 0 : integer,
-    lastCruiseSpd:= 0 : integer,
+    cruiseSpd: float,
+    lastCruiseSpd: float,
     isGoingOn: integer
   in
   
@@ -40,6 +40,7 @@
     trap STEP_TRANSITION in
 
       if currentState = OFF then
+        cruiseSpd := 0.0;
         present On then
           present Speed then
             cruiseSpd := ?Speed;
