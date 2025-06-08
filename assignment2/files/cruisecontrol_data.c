@@ -121,11 +121,10 @@ void _text_to_CruiseState(CruiseState *state, char *text)
         *state = CRUISE_OFF; // fallback default
 }
 
-//string conversion function 3
 int _check_CruiseState(char *text)
 {
-    return (strcmp(text, "OFF") == 0 ||
-            strcmp(text, "ON") == 0 ||
-            strcmp(text, "STDBY") == 0 ||
-            strcmp(text, "DISABLE") == 0);
+    return (my_strcmp(text, "OFF") ||
+            my_strcmp(text, "ON") ||
+            my_strcmp(text, "STDBY") ||
+            my_strcmp(text, "DISABLE"));
 }
