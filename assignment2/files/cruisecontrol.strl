@@ -14,9 +14,9 @@
   input QuickAccel;
   input Accel: float;
   input Brake: float;
-  input Speed: integer;
+  input Speed: float;
 
-  output CruiseSpeed: integer;
+  output CruiseSpeed: float;
   output ThrottleCmd: float;
   output CruiseState: CruiseState;
 
@@ -29,11 +29,13 @@
 
   var
     currentState := init: CruiseState,
-    cruiseSpd:=0 :integer,
-    lastCruiseSpd:=0 :integer,
+    cruiseSpd: float,
+    lastCruiseSpd: float,
     isGoingOn: integer
   in
   loop
+    cruiseSpd:=0.0;
+    lastCruiseSpd:=0.0;
     pause;
     trap STEP_TRANSITION in
 
