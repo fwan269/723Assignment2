@@ -33,9 +33,9 @@
     lastCruiseSpd: float,
     isGoingOn: integer
   in
+  
   loop
-    cruiseSpd:=0.0;
-    lastCruiseSpd:=0.0;
+  
     pause;
     trap STEP_TRANSITION in
 
