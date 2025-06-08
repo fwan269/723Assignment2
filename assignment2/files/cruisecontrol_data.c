@@ -79,6 +79,7 @@ void _CruiseState(CruiseState *lhs, CruiseState rhs)
 
 //equality function
 int _eq_CruiseState(CruiseState *lhs, CruiseState rhs){
+	
 	if(*lhs == rhs){
 		return 1;
 	} else{
