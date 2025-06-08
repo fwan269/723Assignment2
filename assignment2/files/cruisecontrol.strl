@@ -14,7 +14,7 @@
   input QuickAccel;
   input Accel: float;
   input Brake: float;
-  input Speed: float;
+  input Speed: integer;
 
   output CruiseSpeed: float;
   output ThrottleCmd: float;
@@ -29,8 +29,8 @@
 
   var
     currentState := init: CruiseState,
-    cruiseSpd:= 0: integer,
-    lastCruiseSpd:=0: integer,
+    cruiseSpd:=0 :integer,
+    lastCruiseSpd:=0 :integer,
     isGoingOn: integer
   in
   loop
