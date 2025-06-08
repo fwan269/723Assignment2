@@ -23,7 +23,7 @@ RETURNS: throttle output (ThrottleCmd)
 float saturateThrottle(float throttleIn, bool* saturate)
 {
 	static const float THROTTLESATMAX = 45.0;
-	if (throttleIn > THROTTLESATMAX and *saturate == true ) {
+	if (throttleIn > THROTTLESATMAX && *saturate == true ) {
 		*saturate = true;
 		return THROTTLESATMAX;
 	}
