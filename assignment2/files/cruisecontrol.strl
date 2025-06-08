@@ -144,8 +144,8 @@
         end
       end;
 
-      emit CruiseState(currentState);
-      emit CruiseSpeed(cruiseSpd);
+      %emit CruiseState(currentState);
+      %emit CruiseSpeed(cruiseSpd);
     end trap;
   end loop;
   end var;
