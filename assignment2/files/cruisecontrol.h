@@ -1,5 +1,8 @@
 #include <stdbool.h>
 #include <stdint.h>
+#ifndef CRUISECONTROL_H
+#define CRUISECONTROL_H
+
 #define SPEED_MIN 30.0
 #define SPEED_MAX 150.0
 #define SPEED_INC 2.5
@@ -11,8 +14,6 @@ typedef enum {
     CRUISE_DISABLE
 } CruiseState;
 
-#ifndef CRUISECONTROL_H
-#define CRUISECONTROL_H
 void _CruiseState(CruiseState *lhs, CruiseState rhs);
 int  _eq_CruiseState(CruiseState lhs, CruiseState rhs);
 char* _CruiseState_to_text(CruiseState state);
