@@ -85,6 +85,8 @@
           else
           cruiseSpd := ?Speed;
           end
+          
+        end
         end;
 
         present QuickAccel then
@@ -144,7 +146,6 @@
 
       emit CruiseState(currentState);
       emit CruiseSpeed(cruiseSpd);
-      end
     end trap;
   end loop;
   end var;
