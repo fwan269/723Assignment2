@@ -54,6 +54,7 @@
           if isPressed(?Accel) then
             currentState := DISABLE;
             emit CruiseState(currentState);
+            emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
             exit STEP_TRANSITION;
           end
        end;
@@ -74,7 +75,7 @@
             isGoingOn := 1;
             emit CruiseState(currentState);
             emit CruiseSpeed(cruiseSpd);
-            emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
+            %emit ThrottleCmd(regulateThrottle(isGoingOn, cruiseSpd, ?Speed));
             exit STEP_TRANSITION;
           end
         end
